@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Sample SAM Template for books-api
+
+  '
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+Resources:
+  BooksApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: books-api
+      StageName:
+        Ref: Stage
+      DefinitionBody:
+        FN::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ../API Definition/openapi.yaml
+  GetBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetBooksFunction
+      Handler: Bookstore::Bookstore.Function::GetBooks
+      Runtime: dotnet6
+      Architectures:
+      - x86_64
+      MemorySize: 256
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Bookstore:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: get
+    Metadata:
+      SamResourceId: GetBooksFunction
+  GetSingleBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetSingleBookFunction
+      Handler: Bookstore::Bookstore.Function::GetBookById
+      Runtime: dotnet6
+      Architectures:
+      - x86_64
+      MemorySize: 256
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Bookstore:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: get
+    Metadata:
+      SamResourceId: GetSingleBookFunction
+Outputs:
+  BookstoreApi:
+    Description: API Gateway endpoint URL for Prod stage for Bookstore function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
+  BookstoreFunction:
+    Description: Bookstore Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - BookstoreFunction
+      - Arn
+  BookstoreFunctionIamRole:
+    Description: Implicit IAM Role created for Bookstore function
+    Value:
+      Fn::GetAtt:
+      - BookstoreFunctionRole
+      - Arn
