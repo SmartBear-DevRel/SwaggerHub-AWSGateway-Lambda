@@ -12,7 +12,7 @@ env:
   ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
   
   # change region to your preferred region
-  AWS_REGION: eu-west-1
+  AWS_REGION: ${{ AWS_REGION }}
 
 jobs:
   test:
@@ -48,7 +48,7 @@ jobs:
           aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ env.AWS_PIPELINE_EXECUTION_ROLE }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
           role-session-name: lambda-packaging
           role-duration-seconds: 3600
           role-skip-session-tagging: true

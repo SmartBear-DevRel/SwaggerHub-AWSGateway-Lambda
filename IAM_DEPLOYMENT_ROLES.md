@@ -226,7 +226,8 @@ Follow the [principle of least privileges](https://docs.aws.amazon.com/IAM/lates
 | ----------- | ----------- | 
 | PIPELINE_EXECUTION_ROLE | Put in the ARN from the PipelineExecutionRole created in step 4 |
 | CLOUDFORMATION_EXECUTION_ROLE | Put in ARN from the CloudFormationRole created in step 3 |
-| ARTIFACTS_BUCKET | Put in ARN of the S3 bucket created in step 1 |
+| ARTIFACTS_BUCKET | Put in *NAME* of the S3 bucket created in step 1 |
+| AWS_REGION | Put in the region you want the resources to be created in |
 
 
 
