@@ -20,7 +20,7 @@ Resources:
           HttpMethod: '*' # allows for logging on any method      
       StageName: !Ref Stage
       DefinitionBody:
-        FN::Transform:
+        Fn::Transform:
           Name: AWS::Include
           Parameters: 
             Location: ../API-Definition/openapi.yaml
