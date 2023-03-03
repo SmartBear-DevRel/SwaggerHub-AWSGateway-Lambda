@@ -18,7 +18,7 @@ Resources:
         - LoggingLevel: INFO
           ResourcePath: '/*' # allows for logging on any resource
           HttpMethod: '*' # allows for logging on any method      
-      StageName: !Ref Stage
+      StageName: dev
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
