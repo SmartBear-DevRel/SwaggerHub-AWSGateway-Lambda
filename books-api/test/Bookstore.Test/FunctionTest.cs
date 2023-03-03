@@ -48,7 +48,7 @@ namespace Bookstore.Tests
             };
 
             var function = new Function();
-            var response = await function.FunctionHandler(request, context);
+            var response = await function.GetBooks(request, context);
 
             Console.WriteLine("Lambda Response: \n" + response.Body);
             Console.WriteLine("Expected Response: \n" + expectedResponse.Body);

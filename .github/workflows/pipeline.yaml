@@ -1,0 +1,113 @@
+name: Pipeline
+
+on: [workflow_dispatch]
+
+env:
+  PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  SAM_TEMPLATE: books-api/template.yaml
+  STACK_NAME: books-api-dev
+  PIPELINE_EXECUTION_ROLE: ${{ vars.PIPELINE_EXECUTION_ROLE }}
+  CLOUDFORMATION_EXECUTION_ROLE: ${{ vars.CLOUDFORMATION_EXECUTION_ROLE }}
+  ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+  
+  # change region to your preferred region
+  AWS_REGION: eu-west-1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'      
+      - run: |
+          dotnet test books-api/test/Bookstore.Test/Bookstore.Tests.csproj
+  
+
+  build-and-package:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'          
+      - uses: aws-actions/setup-sam@v2
+
+      - name: Build resources
+        run: sam build --template ${SAM_TEMPLATE}
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_PIPELINE_EXECUTION_ROLE }}
+          role-session-name: lambda-packaging
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Upload artifacts to artifact buckets
+        run: |
+          sam package \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --region ${AWS_REGION} \
+            --output-template-file packaged-lambda.yaml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: packaged-lambda.yaml
+          path: packaged-lambda.yaml
+
+  deploy:
+    needs: [build-and-package]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'          
+      - uses: aws-actions/setup-sam@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: packaged-lambda.yaml
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: lambda-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Deploy to account
+        run: |
+          sam deploy --stack-name ${STACK_NAME} \
+            --template packaged-lambda.yaml \
+            --capabilities CAPABILITY_IAM \
+            --region ${AWS_REGION} \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --no-fail-on-empty-changeset \
+            --role-arn ${CLOUDFORMATION_EXECUTION_ROLE}
+
+  integration-test:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'      
+      - run: |
+          # trigger the integration tests here

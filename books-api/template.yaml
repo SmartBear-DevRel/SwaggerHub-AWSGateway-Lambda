@@ -14,12 +14,16 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: books-api
+      MethodSettings:
+        - LoggingLevel: INFO
+          ResourcePath: '/*' # allows for logging on any resource
+          HttpMethod: '*' # allows for logging on any method      
       StageName: !Ref Stage
       DefinitionBody:
         FN::Transform:
           Name: AWS::Include
           Parameters: 
-            Location: ../API Definition/openapi.yaml
+            Location: ../API-Definition/openapi.yaml
 
   #BookstoreFunction:
   GetBooksFunction:
