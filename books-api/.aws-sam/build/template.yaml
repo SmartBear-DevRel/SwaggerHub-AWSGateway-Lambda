@@ -12,13 +12,16 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: books-api
-      StageName:
-        Ref: Stage
+      MethodSettings:
+      - LoggingLevel: INFO
+        ResourcePath: /*
+        HttpMethod: '*'
+      StageName: dev
       DefinitionBody:
-        FN::Transform:
+        Fn::Transform:
           Name: AWS::Include
           Parameters:
-            Location: ../API Definition/openapi.yaml
+            Location: ..\..\..\API-Definition\openapi.yaml
   GetBooksFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -64,15 +67,15 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage for Bookstore function
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
-  BookstoreFunction:
+  GetBooksFunction:
     Description: Bookstore Lambda Function ARN
     Value:
       Fn::GetAtt:
-      - BookstoreFunction
+      - GetBooksFunction
       - Arn
-  BookstoreFunctionIamRole:
+  GetBooksFunctionIamRole:
     Description: Implicit IAM Role created for Bookstore function
     Value:
       Fn::GetAtt:
-      - BookstoreFunctionRole
+      - GetBooksFunction
       - Arn

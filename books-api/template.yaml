@@ -71,9 +71,9 @@ Outputs:
   BookstoreApi:
     Description: "API Gateway endpoint URL for Prod stage for Bookstore function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
-  BookstoreFunction:
+  GetBooksFunction:
     Description: "Bookstore Lambda Function ARN"
-    Value: !GetAtt BookstoreFunction.Arn
-  BookstoreFunctionIamRole:
+    Value: !GetAtt GetBooksFunction.Arn
+  GetBooksFunctionIamRole:
     Description: "Implicit IAM Role created for Bookstore function"
-    Value: !GetAtt BookstoreFunctionRole.Arn
+    Value: !GetAtt GetBooksFunction.Arn
