@@ -12,7 +12,7 @@ env:
   ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
   
   # change region to your preferred region
-  AWS_REGION: ${{ AWS_REGION }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
 
 jobs:
   test:
