@@ -1,3 +1,4 @@
+# AWS IAM Role and Resource Setup
 In order to be able to leverage the GitHub action deployment for your API and Lambda serverless function implementing the API, a few IAM roles and AWS resources need to be setup. Following the setup, the respective ARNs can be added to the environmental variables for your forked repository.
 
 Overview of roles / resources to be created
