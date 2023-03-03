@@ -14,10 +14,10 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: books-api
-      MethodSettings:
-        - LoggingLevel: INFO
-          ResourcePath: '/*' # allows for logging on any resource
-          HttpMethod: '*' # allows for logging on any method      
+      #MethodSettings:
+      #  - LoggingLevel: INFO
+      #    ResourcePath: '/*' # allows for logging on any resource
+      #    HttpMethod: '*' # allows for logging on any method      
       StageName: dev
       DefinitionBody:
         Fn::Transform:
