@@ -108,6 +108,19 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'      
+          dotnet-version: '6.0.x'
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: testing-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
       - run: |
-          # trigger the integration tests here
+          dotnet test books-api/test/Bookstore.IntegrationTest/Bookstore.IntegrationTest.csproj
+        env:
+          STACK_NAME: ${{ env.STACK_NAME}}
+          AWS_REGION: ${{ env.AWS_REGION }}
