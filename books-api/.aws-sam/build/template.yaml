@@ -35,7 +35,7 @@ Resources:
           Type: Api
           Properties:
             Path: /books
-            Method: get
+            Method: GET
             RestApiId:
               Ref: BooksApi
     Metadata:
@@ -57,17 +57,13 @@ Resources:
           Type: Api
           Properties:
             Path: /books/{id}
-            Method: get
+            Method: GET
             RestApiId:
               Ref: BooksApi
     Metadata:
       SamResourceId: GetSingleBookFunction
 Outputs:
   BookstoreApi:
-    Description: API Gateway endpoint URL for Prod stage for Bookstore function
-    Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
-  BooksGatewayApi:
     Description: API Gateway endpoint URL for Prod stage for Bookstore function
     Value:
       Fn::Sub: https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
