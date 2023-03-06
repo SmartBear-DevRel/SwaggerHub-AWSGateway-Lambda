@@ -1,10 +1,10 @@
 # AWS IAM Role and Resource Setup
-In order to be able to leverage the GitHub action deployment for your API and Lambda serverless function implementing the API, a few IAM roles and AWS resources need to be setup. Following the setup, the respective ARNs can be added to the environmental variables for your forked repository.
+In order to be able to leverage the GitHub action deployment for your API and Lambda serverless function implementing the API, a few IAM roles and an S3 bucket resource need to be setup. Following the setup, the respective ARNs can be added to the environmental variables for your forked repository.
 
 Overview of roles / resources to be created
 | Name      | Type | Description |
 | ----------- | ----------- | ------------- |
-| S3 Bucket      | Resource | The created S3 bucket with store the code artifacts during deployment (e.g., the Lambda function code) |
+| S3 Bucket      | Resource | The S3 bucket with store the code artifacts during deployment (e.g., the Lambda function code) |
 | LambdaExecutionRole | Role | The role that will execute the deployed lambda function |
 | CloudFormationRole   | Role | This role is where the permissions for deploying the application-specific resources are defined within AWS IAM |
 | PipelineExecutionRole | Role | This role is assumed by the principal who is initiating the deployment process |
@@ -64,7 +64,7 @@ Create a new IAM role as follows:
 - Click **Create role**
 - Choose **AWS service** as the _Trusted entity type_ and **Lambda** as the _Use case_ (note we'll be overriding this anyway)
 - Click **Next**
-- On the _Add permissions'  click **Next**
+- On the _Add permissions_  click **Next**
 - On the _Role details_ page, enter a meaningful name in the Role name input (e.g. `aws-actions-dev-PipelineExecutionRole`)
 - Update the default description to something more meaningful (e.g. `This role is assumed by the principal who is initiating the deployment process`)
 - Click **Create role**
@@ -162,7 +162,7 @@ Now we're going to allow access to the S3 bucket created in step 1, but limit ac
 - Click **Edit** within the _Block public access (bucket settings)_ and **uncheck** the _Block all public access' checkbox
 - Click **Save changes** 
 - Enter `confirm` into the prompt dialog and click **Confirm**
-- Click **Edit** within the _Bucket policy' section
+- Click **Edit** within the _Bucket policy_ section
 - Paste the following and then replace the relevant strings:
 ```
 {
@@ -225,10 +225,10 @@ Follow the [principle of least privileges](https://docs.aws.amazon.com/IAM/lates
 
 | Name      | Value | 
 | ----------- | ----------- | 
-| PIPELINE_EXECUTION_ROLE | Put in the ARN from the PipelineExecutionRole created in step 4 |
-| CLOUDFORMATION_EXECUTION_ROLE | Put in ARN from the CloudFormationRole created in step 3 |
+| PIPELINE_EXECUTION_ROLE | Put in the **ARN** from the PipelineExecutionRole created in step 4 |
+| CLOUDFORMATION_EXECUTION_ROLE | Put in **ARN** from the CloudFormationRole created in step 3 |
 | ARTIFACTS_BUCKET | Put in **NAME** of the S3 bucket created in step 1 |
-| AWS_REGION | Put in the region you want the resources to be created in |
+| AWS_REGION | Put in the region (e.g., `eu-west-1`) you want the resources to be created in |
 
 
 

@@ -26,36 +26,94 @@ namespace Bookstore.Tests
         return books;
     }
 
-    [Fact]
-    public async Task TestBookstoreFunctionHandler()
+    private static Book GetBook(string bookId)
     {
-            var request = new APIGatewayProxyRequest();
-            var context = new TestLambdaContext();
+        return GetBooksFiltered(null, null).Where(b => b.Id.Equals(bookId, System.StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+    }
 
-            var serializationOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+    [Fact]
+    public async Task TestGetBooksFunctionHandler()
+    {
+        var request = new APIGatewayProxyRequest();
+        var context = new TestLambdaContext();
 
-            var books = GetBooksFiltered(null, null);
+        var serializationOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
-            var expectedResponse = new APIGatewayProxyResponse
-            {
-                Body = JsonSerializer.Serialize(books),
-                StatusCode = 200,
-                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-            };
+        var books = GetBooksFiltered(null, null);
 
-            var function = new Function();
-            var response = await function.GetBooks(request, context);
+        var expectedResponse = new APIGatewayProxyResponse
+        {
+            Body = JsonSerializer.Serialize(books),
+            StatusCode = 200,
+            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        };
 
-            Console.WriteLine("Lambda Response: \n" + response.Body);
-            Console.WriteLine("Expected Response: \n" + expectedResponse.Body);
+        var function = new Function();
+        var response = await function.GetBooks(request, context);
 
-            Assert.Equal(expectedResponse.Body, response.Body);
-            Assert.Equal(expectedResponse.Headers, response.Headers);
-            Assert.Equal(expectedResponse.StatusCode, response.StatusCode);
+        Console.WriteLine("Lambda Response: \n" + response.Body);
+        Console.WriteLine("Expected Response: \n" + expectedResponse.Body);
+
+        Assert.Equal(expectedResponse.Body, response.Body);
+        Assert.Equal(expectedResponse.Headers, response.Headers);
+        Assert.Equal(expectedResponse.StatusCode, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("be05885a-41fc-4820-83fb-5db17015ed4a", 200, "")]
+    [InlineData("dd3424c9-17ec-4b20-a89c-ca89d98bbd3b", 200, "")]
+    [InlineData("bf936dc3-6c70-43a0-a4c5-ddb42569a9c8", 200, "")]
+    [InlineData("a fictional book id", 404, "404 Not Found")]
+    public async Task TestGetBookByIdFunctionHandler(string bookId, int statusCode, string errorBody)
+    {
+      var request = new APIGatewayProxyRequest();
+      var context = new TestLambdaContext();
+
+      var serializationOptions = new JsonSerializerOptions
+      {
+          PropertyNameCaseInsensitive = true,
+          PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+      };
+     
+      request.PathParameters = new Dictionary<string, string>();
+      request.PathParameters.Add("id", bookId);
+      
+      var book = GetBook(bookId);
+      var expectedResponse = new APIGatewayProxyResponse();
+
+      if(book == null)
+      {
+            expectedResponse = new APIGatewayProxyResponse
+          {
+              Body = errorBody,
+              StatusCode = statusCode,
+              Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+          };               
+      }
+      else 
+      {
+        expectedResponse = new APIGatewayProxyResponse
+        {
+          Body = JsonSerializer.Serialize(book),
+          StatusCode = statusCode,
+          Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        };
+      }
+
+      var function = new Function();
+      var response = await function.GetBookById(request, context);
+
+      Console.WriteLine("Lambda Response: \n" + response.Body);
+      Console.WriteLine("Expected Response: \n" + expectedResponse.Body);
+
+      Assert.Equal(expectedResponse.Body, response.Body);
+      Assert.Equal(expectedResponse.Headers, response.Headers);
+      Assert.Equal(expectedResponse.StatusCode, response.StatusCode);
+
     }
   }
 }
