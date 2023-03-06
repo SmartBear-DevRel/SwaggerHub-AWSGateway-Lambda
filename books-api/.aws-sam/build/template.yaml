@@ -12,11 +12,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: books-api
-      MethodSettings:
-      - LoggingLevel: INFO
-        ResourcePath: /*
-        HttpMethod: '*'
-      StageName: dev
+      StageName: Prod
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
@@ -40,6 +36,8 @@ Resources:
           Properties:
             Path: /books
             Method: get
+            RestApiId:
+              Ref: BooksApi
     Metadata:
       SamResourceId: GetBooksFunction
   GetSingleBookFunction:
@@ -60,6 +58,8 @@ Resources:
           Properties:
             Path: /books/{id}
             Method: get
+            RestApiId:
+              Ref: BooksApi
     Metadata:
       SamResourceId: GetSingleBookFunction
 Outputs:
@@ -67,6 +67,10 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage for Bookstore function
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
+  BooksGatewayApi:
+    Description: API Gateway endpoint URL for Prod stage for Bookstore function
+    Value:
+      Fn::Sub: https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
   GetBooksFunction:
     Description: Bookstore Lambda Function ARN
     Value:

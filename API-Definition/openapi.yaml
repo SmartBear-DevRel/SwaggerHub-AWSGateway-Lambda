@@ -11,6 +11,17 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
+x-amazon-apigateway-request-validators:
+  all:
+    validateRequestBody: true
+    validateRequestParameters: true
+  params:
+    validateRequestBody: true
+    validateRequestParameters: true
+  body:
+    validateRequestBody: true
+    validateRequestParameters: false
+
 tags:
   - name: Bookstore
     description: APIs for our fictional bookstore
@@ -25,6 +36,7 @@ paths:
       description: |
         This API method supports searching the book catalog based on book title or author name
       operationId: getBooks
+      x-amazon-apigateway-request-validator: params
       tags: 
         - Bookstore
       parameters: 
@@ -62,6 +74,7 @@ paths:
       summary: Get the details for a specific book
       description: Retrieve the full detailed response for a known book
       operationId: getBookById
+      x-amazon-apigateway-request-validator: params
       tags:
       - Bookstore
       parameters: 

@@ -44,6 +44,7 @@ Resources:
           Properties:          
             Path: /books
             Method: get
+            RestApiId: !Ref BooksApi
           
   GetSingleBookFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -63,6 +64,7 @@ Resources:
           Properties:          
             Path: /books/{id}
             Method: get
+            RestApiId: !Ref BooksApi
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -71,6 +73,9 @@ Outputs:
   BookstoreApi:
     Description: "API Gateway endpoint URL for Prod stage for Bookstore function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
+  BooksGatewayApi:
+    Description: "API Gateway endpoint URL for Prod stage for Bookstore function"
+    Value: !Sub "https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"    
   GetBooksFunction:
     Description: "Bookstore Lambda Function ARN"
     Value: !GetAtt GetBooksFunction.Arn
