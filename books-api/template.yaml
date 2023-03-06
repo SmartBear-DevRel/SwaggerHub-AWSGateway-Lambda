@@ -43,7 +43,7 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:          
             Path: /books
-            Method: get
+            Method: GET
             RestApiId: !Ref BooksApi
           
   GetSingleBookFunction:
@@ -63,7 +63,7 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:          
             Path: /books/{id}
-            Method: get
+            Method: GET
             RestApiId: !Ref BooksApi
 
 Outputs:
