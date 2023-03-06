@@ -69,7 +69,7 @@ paths:
         httpMethod: "POST"
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"  
-  /books/{bookId}:
+  /books/{id}:
     get:
       summary: Get the details for a specific book
       description: Retrieve the full detailed response for a known book
@@ -78,7 +78,7 @@ paths:
       tags:
       - Bookstore
       parameters: 
-      - name: bookId
+      - name: id
         description: The identifier for a book
         in: path
         required: true
