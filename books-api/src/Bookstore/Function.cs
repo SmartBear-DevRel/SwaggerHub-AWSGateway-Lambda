@@ -6,6 +6,7 @@ using System.Text.Json;
 
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
+using System;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -27,6 +28,26 @@ namespace Bookstore
                 new Book(){ Id = "bf936dc3-6c70-43a0-a4c5-ddb42569a9c8", Title = "Building Microservices", Authors = new List<string>(){ "Sam Newman" }, Published = "2022-01-01"}                
             };
 
+            // filter by author and title
+            if(!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(author))
+            {
+                return books.Where(b => b.Title.Contains(title, System.StringComparison.OrdinalIgnoreCase) 
+                    && b.Authors.Any(a => a.Contains(author, StringComparison.OrdinalIgnoreCase))).ToList();
+            }
+
+            // filter by title
+            if(!string.IsNullOrEmpty(title))
+            {
+                return books.Where(b => b.Title.Contains(title, System.StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // filter by author
+            if(!string.IsNullOrEmpty(author))
+            {
+                return books.Where(b => b.Authors.Any(a => a.Contains(author, StringComparison.OrdinalIgnoreCase))).ToList();
+                
+            }
+
             return books;
         }
 
@@ -35,7 +56,7 @@ namespace Bookstore
             return GetBooksFiltered(null, null).Where(b => b.Id.Equals(bookId, System.StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
         }
 
-        public async Task<APIGatewayProxyResponse> GetBooks(APIGatewayProxyRequest apigProxyEvent, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> GetBooks(APIGatewayProxyRequest input, ILambdaContext context)
         {
 
             var serializationOptions = new JsonSerializerOptions
@@ -44,9 +65,15 @@ namespace Bookstore
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
+            //Console.WriteLine("queryString : " + input.QueryStringParameters?.Values ?? "");
             
+            var title = "";
+            input.QueryStringParameters?.TryGetValue("title", out title);
 
-            var books = GetBooksFiltered(null, null);
+            var author = "";
+            input.QueryStringParameters?.TryGetValue("author", out author);
+
+            var books = GetBooksFiltered(title, author);
 
             return new APIGatewayProxyResponse
             {
