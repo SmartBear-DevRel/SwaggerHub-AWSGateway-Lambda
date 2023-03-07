@@ -130,6 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assume the pipeline user role
+        id: get-outputs
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
@@ -140,19 +141,20 @@ jobs:
           role-duration-seconds: 3600
           role-skip-session-tagging: true
       - run: |
-            echo "::set-output name=AWS_API_ENDPOINT::$( aws cloudformation \
+            echo "::set-output name=ENDPOINT::$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
             --query "Stacks[0].Outputs[0].OutputValue" \
             --output text
             )"
       - run: |
-          echo "{AWS_API_ENDPOINT}=$( aws cloudformation \
+          echo "AWS_API_ENDPOINT=$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
             --query "Stacks[0].Outputs[0].OutputValue" \
             --output text
             )" >> $GITHUB_OUTPUT
+      - name: Write summary        
       - run: |
-          SUMMARY=$'## AWS API Endpoint \n ${AWS_API_ENDPOINT} + ${GITHUB_OUTPUT}'
+          SUMMARY=$'## AWS API Endpoint \n ${{ steps.get-outputs.outputs.ENDPOINT}} + ${{GITHUB_OUTPUT}}'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
