@@ -149,6 +149,6 @@ jobs:
             )" >> $GITHUB_OUTPUT
       - name: Write summary        
         run: |
-          echo ${{join(steps.get-outputs.outputs.*, '\n')}
+          echo ${{join(steps.get-outputs.outputs.*, '\n')}}
           SUMMARY=${{join(steps.get-outputs.outputs.*, '\n')}}
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
