@@ -131,7 +131,16 @@ jobs:
     steps:
       - name: Assume the pipeline user role
         id: get-outputs
-        run: |
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: get-cloud-formation-output
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true        
+      - run: |
           echo "AWS_API_ENDPOINT=$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
