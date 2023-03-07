@@ -6,7 +6,8 @@ info:
     The **Books API** - allows searching of books from the book catalog as well as retrieving the specific details on a selected book. This is a simple API to demonstrate the capabilities between [SwaggerHub](https://swagger.io/tools/swaggerhub/) and AWS Gateway.
   termsOfService: http://swagger.io/terms/
   contact: 
-    email: frank.kilcommins@smartbear.com
+    name: Frank Kilcommins
+    email: info@smartbear.com
   license: 
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -26,8 +27,9 @@ tags:
   - name: Bookstore
     description: APIs for our fictional bookstore
 
-#servers: {}
-#  automocking required
+servers:  
+  - description: AWS API Gateway Endpoint
+    url: https://replace-me.com
  
 paths:
   /books:
@@ -150,7 +152,3 @@ components:
           schema:
             $ref: '#/components/schemas/Book'
             
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/frank-kilcommins/Books/1.0.0

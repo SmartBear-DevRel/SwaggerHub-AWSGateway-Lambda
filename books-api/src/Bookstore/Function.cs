@@ -65,7 +65,6 @@ namespace Bookstore
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
-            //Console.WriteLine("queryString : " + input.QueryStringParameters?.Values ?? "");
             
             var title = "";
             input.QueryStringParameters?.TryGetValue("title", out title);
@@ -83,10 +82,10 @@ namespace Bookstore
             };
         }
 
-        public async Task<APIGatewayProxyResponse> GetBookById(APIGatewayProxyRequest apigProxyEvent, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> GetBookById(APIGatewayProxyRequest input, ILambdaContext context)
         {
             var bookId = "";
-            apigProxyEvent.PathParameters?.TryGetValue("id", out bookId);
+            input.PathParameters?.TryGetValue("id", out bookId);
 
             if(string.IsNullOrEmpty(bookId))
             {
