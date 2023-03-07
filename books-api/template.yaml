@@ -75,7 +75,7 @@ Outputs:
   #  Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
   BookstoreApi:
     Description: "API Gateway endpoint URL for Prod stage for Bookstore function"
-    Value: !Sub "https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"    
+    Value: !Sub "https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"    
   GetBooksFunction:
     Description: "Bookstore Lambda Function ARN"
     Value: !GetAtt GetBooksFunction.Arn

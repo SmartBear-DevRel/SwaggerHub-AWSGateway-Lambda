@@ -124,3 +124,28 @@ jobs:
         env:
           STACK_NAME: ${{ env.STACK_NAME}}
           AWS_REGION: ${{ env.AWS_REGION }}
+
+  output-endpoint:
+    needs: [integration-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: get-cloud-formation-output
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+      - run: |
+            echo "::set-output name=AWS_API_ENDPOINT::$( aws cloudformation \
+            --region ${AWS_REGION} describe-stacks \
+            --stack-name ${STACK_NAME} \
+            --query "Stacks[0].Outputs[?OutputKey==`BookstoreApi`].OutputValue" \
+            --output text
+            )"
+      - run: |
+          SUMMARY=$'## AWS API Endpoint \n ${AWS_API_ENDPOINT}'
+          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
