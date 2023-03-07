@@ -13,7 +13,7 @@ public class IntegrationTests : IClassFixture<Setup>
     public async void GetBooks_ShouldReturnOk()
     {
 
-        var getBooksResponse = await this._httpClient.GetAsync($"{Setup.ApiUrl}");
+        var getBooksResponse = await this._httpClient.GetAsync($"{Setup.ApiUrl}/books");
 
         Assert.Equal(HttpStatusCode.OK, getBooksResponse.StatusCode);
     }
