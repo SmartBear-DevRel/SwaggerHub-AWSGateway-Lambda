@@ -141,13 +141,6 @@ jobs:
           role-duration-seconds: 3600
           role-skip-session-tagging: true
       - run: |
-            echo "::set-output name=ENDPOINT::$( aws cloudformation \
-            --region ${AWS_REGION} describe-stacks \
-            --stack-name ${STACK_NAME} \
-            --query "Stacks[0].Outputs[0].OutputValue" \
-            --output text
-            )"
-      - run: |
           echo "AWS_API_ENDPOINT=$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
@@ -156,5 +149,5 @@ jobs:
             )" >> $GITHUB_OUTPUT
       - name: Write summary        
         run: |
-          SUMMARY=$'## AWS API Endpoint \n ${{ steps.get-outputs.outputs.ENDPOINT}}'
+          SUMMARY=$'## AWS API Endpoint \n ${{ steps.get-outputs.outputs.*}}'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
