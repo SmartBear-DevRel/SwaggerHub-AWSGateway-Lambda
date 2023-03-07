@@ -130,7 +130,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assume the pipeline user role
-        id: get-outputs
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
@@ -144,11 +143,11 @@ jobs:
           echo "AWS_API_ENDPOINT=$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
-            --query "Stacks[0].Outputs[0].OutputValue" \
-            --output text
-            )" >> $GITHUB_OUTPUT
+            --query "Stacks[0].Outputs[0].OutputValue" --output text)" >> $GITHUB_OUTPUT
+        id: get-outputs
       - name: Write summary        
         run: |
+          echo "Output [${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}]"
           echo ${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}
           echo ${{join(steps.get-outputs.outputs.*, '\n')}}
           echo "${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}" >> $GITHUB_STEP_SUMMARY
