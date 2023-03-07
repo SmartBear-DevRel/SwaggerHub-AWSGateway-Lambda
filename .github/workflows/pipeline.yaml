@@ -147,7 +147,4 @@ jobs:
         id: get-outputs
       - name: Write summary        
         run: |
-          echo "Output [${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}]"
-          echo ${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}
-          echo ${{join(steps.get-outputs.outputs.*, '\n')}}
-          echo "${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}" >> $GITHUB_STEP_SUMMARY
+          echo "AWS_API_Gateway_Endpoint: ${{steps.get-outputs.outputs.AWS_API_ENDPOINT}}" >> $GITHUB_STEP_SUMMARY
