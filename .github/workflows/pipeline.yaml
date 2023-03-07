@@ -149,5 +149,5 @@ jobs:
             )" >> $GITHUB_OUTPUT
       - name: Write summary        
         run: |
-          SUMMARY=$'## AWS API Endpoint \n ${{ steps.get-outputs.outputs.*}}'
+          SUMMARY=$'## AWS API Endpoint \n ${{join(steps.get-outputs.outputs.*, '\n')}}'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
