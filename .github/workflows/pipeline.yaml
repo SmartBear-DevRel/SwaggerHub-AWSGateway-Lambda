@@ -143,9 +143,16 @@ jobs:
             echo "::set-output name=AWS_API_ENDPOINT::$( aws cloudformation \
             --region ${AWS_REGION} describe-stacks \
             --stack-name ${STACK_NAME} \
-            --query "Stacks[0].Outputs[?OutputKey==`BookstoreApi`].OutputValue" \
+            --query "Stacks[0].Outputs[0].OutputValue" \
             --output text
             )"
       - run: |
-          SUMMARY=$'## AWS API Endpoint \n ${AWS_API_ENDPOINT}'
+          echo "{AWS_API_ENDPOINT}=$( aws cloudformation \
+            --region ${AWS_REGION} describe-stacks \
+            --stack-name ${STACK_NAME} \
+            --query "Stacks[0].Outputs[0].OutputValue" \
+            --output text
+            )" >> $GITHUB_OUTPUT
+      - run: |
+          SUMMARY=$'## AWS API Endpoint \n ${AWS_API_ENDPOINT} + ${GITHUB_OUTPUT}'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
