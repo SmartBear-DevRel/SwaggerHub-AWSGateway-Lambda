@@ -1,7 +1,7 @@
 # SwaggerHub-AWSGateway-Lambda
 A sample solution taking an API definition from SwaggerHub, crafting a Lambda function from the API definition, and then publishing the function behind AWS Gateway.
 
-![SwaggerHub-AWSGateway-AWSLambda](./images/SwaggerHub-AWSAPIGateway-Lambda-min.png)
+![SwaggerHub-AWSGateway-AWSLambda](./images/SwaggerHub-AWSAPIGateway-Lambda.png)
 
 ## Table of Contents
 - [Problem Statement](#problem-statement)
@@ -22,6 +22,7 @@ A sample solution taking an API definition from SwaggerHub, crafting a Lambda fu
    - [Models](#models)
    - [Documentation](#documentation)
    - [Usage dashboards](#usage-dashboards)
+- [Continue the journey](#continue-the-journey)
 
  ## Problem Statement
  
@@ -159,3 +160,15 @@ The API documentation is also generated the API definition negating the need for
 One of the major benefits of a gateway function is being able to observe how an API is being consumed. AWS API Gateway gives plenty of insights on API calls and performance out of the box.
 
 ![AWSGateway-Dashboards](./images/AWS-API-Gateway-Dashboard.png)
+
+## Continue the Journey
+
+TODO - this section will contain additional resources and hardening practices
+
+- Using [SwaggerHub Explore](https://try.smartbear.com/swaggerhub-explore?utm_medium=thirdPart&utm_source=devrel-content&utm_campaign=devrel-explore&utm_content=blog
+) to interact with the surface area of an API
+- Using the SwaggerHub CLI (command line interface) (LINK)
+- Adding Custom Standardization rules and guidelines to SwaggerHub (LINK)
+- User SwaggerHub Domains (share code libraries) to share common API components (LINK)
+- Adding Authentication to the sample API and AWS Gateway (LINK)
+- <<more>> (LINK)
