@@ -152,7 +152,7 @@ The API models are automatically generated from the JSON Schema components conta
 ![AWSGateway-Models](./images/AWS-API-Gateway-Models.png)
 
 ### Documentation
-The API documentation is also generated the API definition negating the need for this to be added after publishing to the gateway.
+The API documentation is also generated from the API definition negating the need for documentation to be added after publishing to the gateway.
 
 ![AWSGateway-Documentation](./images/AWS-API-Gateway-Documentation.png)
 
