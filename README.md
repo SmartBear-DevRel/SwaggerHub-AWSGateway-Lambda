@@ -50,7 +50,8 @@ In this integrated exercise you will create an end-to-end solution which takes y
 - Review the AWS API Gateway (the setup of which is driven off the OAS definition)
 - Learn about additional steps and functionality supported by the environment that has been setup
 
-> !!Solution Overview Image will go here!!
+The assets and solution overview is as follows:
+![Solution Overview](./images/Solution-Overview.png)
 
 ## Prerequisites
 
