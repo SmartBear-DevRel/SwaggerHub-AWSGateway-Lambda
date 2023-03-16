@@ -168,5 +168,5 @@ One of the major benefits of a gateway function is being able to observe how an 
 - Using [SwaggerHub Explore](https://try.smartbear.com/swaggerhub-explore?utm_medium=thirdPart&utm_source=devrel-content&utm_campaign=devrel-explore&utm_content=blog) to interact with the surface area of an API
 - Using the [SwaggerHub CLI](https://github.com/SmartBear/swaggerhub-cli) (Command Line Interface)
 - Adding [custom standardization](https://support.smartbear.com/swaggerhub/docs/organizations/api-standardization.html) rules and guidelines to SwaggerHub
-- User [SwaggerHub domains](https://support.smartbear.com/swaggerhub/docs/domains/index.html), which act like share code libraries, to share common API components across multiple APIs
+- Use [SwaggerHub domains](https://support.smartbear.com/swaggerhub/docs/domains/index.html) (shared code libraries) to share common API components across multiple APIs
 - Adding [authentication](https://swagger.io/docs/specification/authentication/) to the sample API and AWS Gateway
