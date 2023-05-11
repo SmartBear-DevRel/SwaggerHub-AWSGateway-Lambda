@@ -50,7 +50,8 @@ In this integrated exercise you will create an end-to-end solution which takes y
 - Review the AWS API Gateway (the setup of which is driven off the OAS definition)
 - Learn about additional steps and functionality supported by the environment that has been setup
 
-> !!Solution Overview Image will go here!!
+The assets and solution overview is as follows:
+![Solution Overview](./images/Solution-Overview.png)
 
 ## Prerequisites
 
@@ -163,12 +164,9 @@ One of the major benefits of a gateway function is being able to observe how an 
 
 ## Continue the Journey
 
-TODO - this section will contain additional resources and hardening practices
 
-- Using [SwaggerHub Explore](https://try.smartbear.com/swaggerhub-explore?utm_medium=thirdPart&utm_source=devrel-content&utm_campaign=devrel-explore&utm_content=blog
-) to interact with the surface area of an API
-- Using the SwaggerHub CLI (command line interface) (LINK)
-- Adding Custom Standardization rules and guidelines to SwaggerHub (LINK)
-- User SwaggerHub Domains (share code libraries) to share common API components (LINK)
-- Adding Authentication to the sample API and AWS Gateway (LINK)
-- <<more>> (LINK)
+- Using [SwaggerHub Explore](https://try.smartbear.com/swaggerhub-explore?utm_medium=thirdPart&utm_source=devrel-content&utm_campaign=devrel-explore&utm_content=blog) to interact with the surface area of an API
+- Using the [SwaggerHub CLI](https://github.com/SmartBear/swaggerhub-cli) (Command Line Interface)
+- Adding [custom standardization](https://support.smartbear.com/swaggerhub/docs/organizations/api-standardization.html) rules and guidelines to SwaggerHub
+- Using [SwaggerHub domains](https://support.smartbear.com/swaggerhub/docs/domains/index.html) (shared code libraries) to share common API components across multiple APIs
+- Adding [authentication](https://swagger.io/docs/specification/authentication/) to the sample API and AWS Gateway

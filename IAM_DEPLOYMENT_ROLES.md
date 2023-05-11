@@ -19,6 +19,8 @@ Create an S3 bucket as follows:
 - Name the bucket uniquely and choose the appropriate _AWS Region_
 - Keep remaining default settings and click **Create bucket**
 
+> **Tip** Keep note of the name and ARN for the created S3 bucket as you'll need it later
+
 _We'll come back and adjust permissions in a later step!_
 
 ### Step 2 - Create a LambdaExecutionRole
@@ -29,6 +31,8 @@ _We'll come back and adjust permissions in a later step!_
 - On the _Add permissions_ page, search for `AWSLambdaBasicExecutionRole`, select it and click **Next**
 - Enter a role name (e.g. `books-api-dev-bookstorefunction`)
 - Click **Create role**
+
+> **Tip** Keep note of the ARN for the created role as you'll need it later
 
 ### Step 3 - Create a CloudFormationRole
 
@@ -56,6 +60,8 @@ Create a new IAM role as follows:
     ```
 - Click **Review policy** and then choose an appropriate policy name (e.g. `GrantCloudFormationFullAccess`)
 - Click **Create policy**
+
+> **Tip** Keep note of the ARN for the created role as you'll need it later
 
 ### Step 4 - Create a PipelineExecutionRole
 
@@ -149,8 +155,11 @@ Create a new IAM role as follows:
         ]
     }
     ```
-- Replace the `<PUT ARN OF appropriate IAM pipeline user here>` string with the user URN bound to the AWS credentials added to the GitHub Repo secrets
+- Create an IAM user with programmatic access and set up appropriate security credentials. See [creating IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) and [create access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) for more information
+- Replace the `<PUT ARN OF appropriate IAM pipeline user here>` string with the user URN bound to the AWS credentials. We'll add the credentials to the repository secrets in _step 6_
 - Click **Update policy**
+
+> **Tip** Keep note of the ARN for the created role as you'll need it later
 
 ### Step 5 - Allow appropriate access to S3 bucket
 
