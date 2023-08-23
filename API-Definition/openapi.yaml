@@ -29,7 +29,7 @@ tags:
 
 servers:  
   - description: AWS API Gateway Endpoint
-    url: https://replace-me.com
+    url: https://example.com
  
 paths:
   /books:

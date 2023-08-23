@@ -128,7 +128,7 @@ OK - let's get started!
 > We'll need the API endpoint above to call the API, so keep it to hand!
 ### Update the SwaggerHub Books API with the _AWS API Gateway_ endpoint
 - In the SwaggerHub Portal page, click on `Books API` to open the API definition
-- Locate the `servers` tag, and replace the `url` for the `AWS API Gateway Endpoint` server tag (currently holding a value of `https://replace-me.com`) with the value of the URL value copied from the pipeline summary above
+- Locate the `servers` tag, and replace the `url` for the `AWS API Gateway Endpoint` server tag (currently holding a value of `https://example.com`) with the value of the URL value copied from the pipeline summary above
 - Click the **Save** button
 
 ### Calling your _AWS API Gateway_ hosted Books API from SwaggerHub
