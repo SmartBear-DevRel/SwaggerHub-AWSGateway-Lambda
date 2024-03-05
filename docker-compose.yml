@@ -15,6 +15,12 @@ services:
       CURRENT_ENV: $CURRENT_ENV
       DOCKER_HOST: unix:///var/run/docker.sock
       DEBUG: 1 # curl -s localhost:4566/_localstack/diagnose / http://localhost:4566/diapretty
+      ARTIFACTS_BUCKET: $ARTIFACTS_BUCKET
+      CLOUDFORMATION_EXECUTION_ROLE_ARN: $CLOUDFORMATION_EXECUTION_ROLE_ARN
+      PIPELINE_EXECUTION_ROLE_ARN: $PIPELINE_EXECUTION_ROLE_ARN
+      LAMBDA_EXECUTION_ROLE_ARN: $LAMBDA_EXECUTION_ROLE_ARN
+      ARTIFACTS_BUCKET_ARN: $ARTIFACTS_BUCKET_ARN
+      STACK_NAME: $STACK_NAME
     volumes:
       - "./docker/init/localstack:/etc/localstack/init/ready.d/"
       - "/var/run/docker.sock:/var/run/docker.sock"
