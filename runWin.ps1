@@ -67,8 +67,8 @@ function sam_package {
 }
 function sam_deploy {
 	$artifactsBucket = if ($env:ARTIFACTS_BUCKET) { $env:ARTIFACTS_BUCKET } else { "swaggerhub-awsgateway-lambda-artifacts" };
-	$stackName = if ($env:AWS_DEFAULT_REGION) { $env:AWS_DEFAULT_REGION } else { "books-api-dev" };
-	$region = if ($env:STACK_NAME) { $env:STACK_NAME } else { "us-east-1" };
+	$stackName = if ($env:STACK_NAME) { $env:STACK_NAME } else { "books-api-dev" };
+	$region = if ($env:AWS_DEFAULT_REGION) { $env:AWS_DEFAULT_REGION } else { "us-east-1" };
 	$cloudformationRoleArn = if ($env:CLOUDFORMATION_EXECUTION_ROLE_ARN) { $env:CLOUDFORMATION_EXECUTION_ROLE_ARN } else { "arn:aws:iam::000000000000:role/aws-actions-dev-CloudFormationExecutionRole" };
 
 	samlocal deploy `
@@ -87,18 +87,19 @@ function sam_integration_test {
 }
 
 function sam_output_endpoint {
-	aws cloudformation describe-stacks --stack-name books-api-dev --query "Stacks[0].Outputs[0].OutputValue" --output text --endpoint http://localstack:4566
+	$region = if ($env:AWS_DEFAULT_REGION) { $env:AWS_DEFAULT_REGION } else { "us-east-1" };
+	aws cloudformation describe-stacks --stack-name books-api-dev --query "Stacks[0].Outputs[0].OutputValue" --output text --region $region --endpoint http://localhost:4566 --profile localstack
 }
 
 function sam_curl_books_endpoint {
-	$apiId = (sam_output_endpoint | Split-Path -Leaf).Split('.')[0]
-	$url = "localhost:4566/restapis/$apiId/Prod/_user_request_/books"
+	$apiId = (sam_output_endpoint).Split('//')[1].Split('.')[0]
+	$url = "http://localhost:4566/restapis/$apiId/Prod/_user_request_/books"
 	Invoke-RestMethod -Uri $url | ConvertTo-Json
 }
 
 function sam_curl_books_id_endpoint {
-	$apiId = (sam_output_endpoint | Split-Path -Leaf).Split('.')[0]
-	$url = "localhost:4566/restapis/$apiId/Prod/_user_request_/books/be05885a-41fc-4820-83fb-5db17015ed4a"
+	$apiId = (sam_output_endpoint).Split('//')[1].Split('.')[0]
+	$url = "http://localhost:4566/restapis/$apiId/Prod/_user_request_/books/be05885a-41fc-4820-83fb-5db17015ed4a"
 	Invoke-RestMethod -Uri $url | ConvertTo-Json
 }
 
