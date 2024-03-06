@@ -1,19 +1,19 @@
 $LOCALSTACK_URL = "localhost:4566"
 
 # Allow for LocalStack existing running instance
-function up {
+function docker_up {
 	if (Test-Connection -ComputerName $LOCALSTACK_URL -Quiet) {
 		docker_no_localstack
 	} else {
-		docker
+		docker_up_build
 	}
 }
 
-function docker {
+function docker_up_build {
 	docker-compose up -d --build
 }
 
-function down {
+function docker_down {
 	docker-compose down
 }
 
@@ -21,14 +21,15 @@ function docker_no_localstack {
 	docker-compose config --services | Select-String -Pattern "localstack" -NotMatch | ForEach-Object { docker-compose up -d $_ }
 }
 
-function env_vars {
+function print_env_vars {
 	Write-Host $env:AWS_ACCESS_KEY_ID
 	Write-Host $env:AWS_SECRET_ACCESS_KEY
 	Write-Host $env:AWS_SESSION_TOKEN
 }
 
 function s3_copy {
-	awslocal s3 cp --recursive s3://${env:ARTIFACTS_BUCKET} ./tmp
+	$artifactsBucket = if ($env:ARTIFACTS_BUCKET) { $env:ARTIFACTS_BUCKET } else { "swaggerhub-awsgateway-lambda-artifacts" };
+	awslocal s3 cp --recursive s3://$artifactsBucket ./tmp
 }
 
 function s3_create {
@@ -52,25 +53,33 @@ function sam_test {
 }
 
 function sam_build {
-	samlocal build --template books-api/template.yaml
+	sam build --template books-api/template.yaml
 }
 
 function sam_package {
+	$artifactsBucket = if ($env:ARTIFACTS_BUCKET) { $env:ARTIFACTS_BUCKET } else { "swaggerhub-awsgateway-lambda-artifacts" };
+	$region = if ($env:AWS_DEFAULT_REGION) { $env:AWS_DEFAULT_REGION } else { "us-east-1" };
 	samlocal package `
-		--s3-bucket ${env:ARTIFACTS_BUCKET:-swaggerhub-awsgateway-lambda-artifacts} `
-		--region ${env:AWS_DEFAULT_REGION} `
-		--output-template-file packaged-lambda.yaml
+		--s3-bucket $artifactsBucket `
+		--region $region `
+		--output-template-file packaged-lambda.yaml `
+		--profile localstack
 }
-
 function sam_deploy {
+	$artifactsBucket = if ($env:ARTIFACTS_BUCKET) { $env:ARTIFACTS_BUCKET } else { "swaggerhub-awsgateway-lambda-artifacts" };
+	$stackName = if ($env:AWS_DEFAULT_REGION) { $env:AWS_DEFAULT_REGION } else { "books-api-dev" };
+	$region = if ($env:STACK_NAME) { $env:STACK_NAME } else { "us-east-1" };
+	$cloudformationRoleArn = if ($env:CLOUDFORMATION_EXECUTION_ROLE_ARN) { $env:CLOUDFORMATION_EXECUTION_ROLE_ARN } else { "arn:aws:iam::000000000000:role/aws-actions-dev-CloudFormationExecutionRole" };
+
 	samlocal deploy `
-		--stack-name ${env:STACK_NAME:-books-api-dev} `
+		--stack-name $stackName `
 		--template packaged-lambda.yaml `
 		--capabilities CAPABILITY_IAM `
-		--region ${env:AWS_DEFAULT_REGION} `
-		--s3-bucket ${env:ARTIFACTS_BUCKET:-swaggerhub-awsgateway-lambda-artifacts} `
+		--region $region `
+		--s3-bucket  $artifactsBucket `
 		--no-fail-on-empty-changeset `
-		--role-arn ${env:CLOUDFORMATION_EXECUTION_ROLE_ARN:-arn:aws:iam::000000000000:role/aws-actions-dev-CloudFormationExecutionRole}
+		--role-arn $cloudformationRoleArn`
+		--profile localstack
 }
 
 function sam_integration_test {
@@ -78,7 +87,7 @@ function sam_integration_test {
 }
 
 function sam_output_endpoint {
-	awslocal cloudformation describe-stacks --stack-name books-api-dev --query "Stacks[0].Outputs[0].OutputValue" --output text
+	aws cloudformation describe-stacks --stack-name books-api-dev --query "Stacks[0].Outputs[0].OutputValue" --output text --endpoint http://localstack:4566
 }
 
 function sam_curl_books_endpoint {
