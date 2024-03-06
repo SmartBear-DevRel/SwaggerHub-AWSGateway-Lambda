@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: Books API
-  version: 1.0.0
+  title: Bookstore API
+  version: 1.0.0-rc-not-security-reviewed
   description: |
-    The **Books API** - allows searching of books from the book catalog as well as retrieving the specific details on a selected book. This is a simple API to demonstrate the capabilities between [SwaggerHub](https://swagger.io/tools/swaggerhub/) and AWS Gateway.
+    The **Books API** - allows searching of books from the book catalog as well as retrieving the specific details on a selected book. Once you find the book you are looking for, you can make an order. This is a simple API to demonstrate the capabilities between [SwaggerHub](https://swagger.io/tools/swaggerhub/) and AWS Gateway.
   termsOfService: http://swagger.io/terms/
   contact: 
     name: Frank Kilcommins
@@ -54,6 +54,13 @@ paths:
         required: false
         schema:
           type: string
+      - name: limit
+        description: The maximum number of books to return
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10          
       responses:
         '200':
           $ref: '#/components/responses/books'
@@ -85,7 +92,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         '200':
           $ref: '#/components/responses/book'
@@ -105,22 +112,182 @@ paths:
         httpMethod: "POST"
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy" 
+  /orders:
+    post:
+      summary: Place book order
+      operationId: createOrder
+      tags:
+      - Bookstore      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateOrderFunction.Arn}/invocations
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"                 
+  /orders/{orderId}:
+    get:
+      summary: Get book order details
+      operationId: getOrderById
+      x-amazon-apigateway-request-validator: params
+      tags:
+      - Bookstore
+      parameters: 
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '404':
+          description: 404 Not Found  
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetOrderFunction.Arn}/invocations
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"            
+    put:
+      summary: Update book order details
+      operationId: updateOrderById
+      x-amazon-apigateway-request-validator: params
+      tags:
+      - Bookstore      
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDetails'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateOrderFunction.Arn}/invocations
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"                  
 components:
-
   schemas:
+    OrderDetails:
+      properties:
+        books:
+          items:
+            $ref: '#/components/schemas/BookOrder'
+          type: array
+        deliveryAddress:
+          type: string
+        id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[012][0-9]:[0-5][0-9]:[0-5][0-9]Z$'
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[012][0-9]:[0-5][0-9]:[0-5][0-9]Z$'
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+      type: object
+      required:
+        - books
+        - deliveryAddress
+        - id
+        - createdAt
+        - updatedAt
+    OrderStatusEnum:
+      type: string
+      enum:
+        - placed
+        - paid
+        - delivered
+    BookOrder:
+      type: object
+      properties:
+        bookId:
+          type: integer
+        quantity:
+          type: integer
+    
+    Order:
+      properties:
+        books:
+          items:
+            $ref: '#/components/schemas/BookOrder'
+          type: array
+        deliveryAddress:
+          type: string
+      type: object
+      required:
+        - books
+        - deliveryAddress
     Book:
       description: The schema object for a Book
       type: object
       additionalProperties: false
       properties:
         id:
-          type: string
+          type: integer
           description: the identifier for a book
-          example: 1e331a0f-29bd-4b6b-8b21-8b87ed653c6b
+          example: 1001
         title:
           type: string
           description: The book title
-          example: Designing APIs with Swagger and OpenAPI
+          example: "Designing APIs with Swagger and OpenAPI"
         authors:
           type: array
           description: A list of book authors
@@ -128,13 +295,29 @@ components:
             type: string
             description: A string holding an author's name
             minItems: 1
-            example: [Joshua S. Ponelat, Lukas L. Rosenstock]
+            example: "[Joshua S. Ponelat, Lukas L. Rosenstock]"
         published:
           type: string
           format: date
           pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           example: "2022-05-01"
-
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+        msg:
+          type: string
+        type:
+          type: string
+      type: object
+      required:
+        - loc
+        - msg
+        - type
   responses:
     books:
       description: List of books

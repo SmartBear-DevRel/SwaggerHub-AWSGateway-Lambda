@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@stoplight/spectral-owasp-ruleset": "^1.4.3"
+  }
+}

@@ -1,0 +1,167 @@
+extends: spectral:oas
+formats: 
+  - oas3
+
+rules:
+  operation-operationId: true
+  operation-tags: off
+  operation-tag-defined: off
+
+  # Note: The Spectral VSCode extension will not display "hint" messages, so use "info" rather than "hint".
+
+  SB-API-050-property-names:
+    description: property names must be camelCase and alphanumeric
+    severity: error
+    recommended: true
+    message: '{{property}} MUST follow camelCase'
+    given: $..properties.*~ 
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+  
+
+  SB-API-050-query-parameter-names:
+    description: query parameter names must be camelCase
+    severity: error
+    recommended: true
+    message: '{{property}} MUST follow camelCase'
+    given: $..parameters[?(@.in == 'query' &&  @.name != '_embedded')].name
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+
+  SB-API-051-path-segments:
+    description: path segments must be kebab-case
+    severity: error
+    recommended: true
+    message: '{{property}} MUST follow kebab-case (lower case and separated with hyphens).'
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: '^(/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$'    
+
+  SB-API-055-date-datetime-properties:
+    description: should end with 'At'
+    severity: warn
+    recommended: true
+    message: Consider having {{property}} end with a suffix of 'At' to promote readability
+    given: $..properties[?(@.format == 'date' || @.format == 'date-time')]~
+    then:
+      function: pattern
+      field: name
+      functionOptions:
+        notMatch: '.+(?<!At)$'    
+
+  SB-API-059-resource-orientated:
+    description: Actions or verbs MUST NOT form part of a URL
+    severity: error
+    recommended: true
+    message: actions, verbs, and non resource oriented segments MUST NOT form part of a URL
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: '^((?!(get|put|delete|patch|post|search|update|copy|clone|fork|rename|default|transfer|.transfer|move|duplicate|bulk|batch|meta|.meta|github|private|.collaboration|template|.template|compare|json|yaml|lang)).)*$'      
+
+  SB-API-061-request-headers:
+    description: MUST NOT start with X- or x-
+    severity: error
+    recommended: true
+    message: '{{property}} MUST not start with X- or x- (https://tools.ietf.org/html/rfc6648)'
+    given: $..parameters[?(@.in == 'header')].name
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: '^(X-)|(x-)'
+
+  SB-API-061-request-header-names:
+    description: MUST by 'Hyphenated-Pascal-Case'
+    severity: error
+    recommended: true
+    message: '{{property}} MUST follow Hyphenated-Pascal-Case'
+    given: $..parameters[?(@.in == 'header')].name
+    then:
+      function: pattern
+      functionOptions:
+        match: '/^([A-Z]-)*([A-Z][a-z0-9]-)*([A-Z][a-z0-9])+/'      
+ 
+  SB-API-070-date-and-date-time-field-pattern:
+    description: MUST have a pattern defined to express supported format
+    severity: error
+    recommended: true
+    message: 'date and date-time fields MUST have pattern specified'
+    given: 
+    - $..properties[?(@.format == 'date')]
+    - $..properties[?(@.format == 'date-time')]
+    then:
+      field: pattern
+      function: truthy
+  
+  SB-API-070-date-fields:
+    description: MUST conform to ISO 8601
+    severity: error
+    recommended: true
+    message: 'date pattern SHOULD be ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ conforming to YYYY-MM-DD'
+    given: $..properties[?(@.format == 'date')].pattern
+    then:
+      function: pattern
+      functionOptions:
+        match: '(\^\[0\-9\]\{4\}\-\[0\-9\]\{2\}\-\[0\-9\]\{2\}\$)$'    
+
+  SB-API-070-date-time-fields:
+    description: MUST conform to ISO 8601
+    severity: error
+    recommended: true
+    message: 'date-time pattern SHOULD be ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[012][0-9]:[0-5][0-9]:[0-5][0-9]Z conforming to YYYY-MM-DDThh:mm:ssZ'
+    given: $..properties[?(@.format == 'date-time')].pattern
+    then:
+      function: pattern
+      functionOptions:
+        match: '(\^\[0\-9\]\{4\}\-\[0\-9\]\{2\}\-\[0\-9\]\{2\}T\[012\]\[0\-9\]:\[0\-5\]\[0\-9\]:\[0\-5\]\[0\-9\]Z\$)$' 
+
+  SB-API-080-path-segments:
+    description: paths and path segments MUST not be empty  
+    severity: error
+    recommended: true     
+    message: 'paths cannot contain empty segments'
+    given: $.paths.*~
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: '([^:]\/)\/+'
+
+  SB-API-XXX-boolean-values:
+    description: booleans should not have an 'is' prefix
+    severity: warn
+    message: it should not be needed to prefix a boolean with 'is'
+    given: $..properties.[?(@.type == 'boolean')]~
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: '^[is]{2}[A-Z0-9$]'
+
+  SB-API-XXX-responses:
+    description: responses SHOULD be an object
+    severity: warn
+    recommended: true
+    given: $.paths.*.*[responses]..content..schema
+    then:
+      function: pattern
+      field: type
+      functionOptions:
+        match: '^object$'
+
+
+  SB-API-XXX-semantic-versioning:
+    description: API documents MUST apply semantic versioning
+    severity: error
+    recommended: true       
+    message: version must conform to 'n.n.n' with optional '-tag'
+    given: $.info.version
+    then:
+      function: pattern
+      functionOptions:
+        match: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'        

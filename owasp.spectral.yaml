@@ -1,0 +1,21 @@
+overrides:
+  - files:
+      - "openapi.yaml"    
+    rules:
+      owasp:api4:2019-string-restricted: "off"
+      owasp:api4:2019-rate-limit-responses-429: "off"
+      owasp:api4:2019-rate-limit: "off"
+      owasp:api1:2019-no-numeric-ids: "off"
+
+extends: [spectral:oas, "@stoplight/spectral-owasp-ruleset"]
+formats:
+  - oas3
+
+rules:
+  operation-operationId: true
+  operation-tags: off
+  operation-tag-defined: off
+
+  # Note: The Spectral VSCode extension will not display "hint" messages, so use "info" rather than "hint".
+
+ 

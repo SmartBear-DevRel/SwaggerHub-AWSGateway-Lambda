@@ -1,5 +1,6 @@
 {
     "configurations": [
+
         {
             "type": "aws-sam",
             "request": "direct-invoke",
@@ -7,7 +8,7 @@
             "invokeTarget": {
                 "target": "template",
                 "templatePath": "${workspaceFolder}/books-api/template.yaml",
-                "logicalId": "BookstoreFunction"
+                "logicalId": "GetBooksFunction"
             },
             "lambda": {
                 "payload": {},
@@ -22,13 +23,20 @@
             "invokeTarget": {
                 "target": "api",
                 "templatePath": "${workspaceFolder}/books-api/template.yaml",
-                "logicalId": "BookstoreFunction"
+                "logicalId": "CreateOrderFunction"
             },
             "api": {
-                "path": "/hello",
-                "httpMethod": "get",
+                "path": "/orders",
+                "httpMethod": "post",
                 "payload": {
-                    "json": {}
+                    "json": {    
+                        "books": [
+                        {
+                            "bookId": 1002,
+                            "quantity": 3
+                        }
+                    ],
+                    "deliveryAddress": "SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland"}
                 }
             },
             "lambda": {

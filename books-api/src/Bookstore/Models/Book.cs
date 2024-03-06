@@ -1,9 +1,14 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 public class Book
 {
-    public string Id { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    [JsonPropertyName("title")]
     public string Title { get; set; }
+    [JsonPropertyName("authors")]
     public List<string> Authors { get; set; }
+    [JsonPropertyName("published")]
     public string Published { get; set; }
 }
