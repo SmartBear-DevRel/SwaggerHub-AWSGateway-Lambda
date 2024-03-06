@@ -5,16 +5,24 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
 using Xunit;
+using Microsoft.Extensions.Caching.Memory;
 using Amazon.Lambda.TestUtilities;
 using Amazon.Lambda.APIGatewayEvents;
+
 
 namespace Bookstore.Tests
 {
   public class FunctionTest
   {
-    private static readonly HttpClient client = new HttpClient();
+    private readonly HttpClient httpClient = new HttpClient();
+    private readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+    private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 
-    private static List<Book> GetBooksFiltered(string title, string author)
+    private List<Book> GetBooksFiltered(string title, string author)
     {
         var books = new List<Book>()
         {
@@ -26,7 +34,7 @@ namespace Bookstore.Tests
         return books;
     }
 
-    private static Book GetBook(int bookId)
+    private Book GetBook(int bookId)
     {
         return GetBooksFiltered(null, null).Where(b => b.Id == bookId).FirstOrDefault();
     }
@@ -145,7 +153,7 @@ namespace Bookstore.Tests
         {
             id = 10001,
             Books = requestBody.Books,
-            Status = Status.Placed,
+            Status = "placed",
             DeliveryAddress = requestBody.DeliveryAddress,
             CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
@@ -168,5 +176,62 @@ namespace Bookstore.Tests
         Assert.Equal(expectedResponse.Headers, response.Headers);
         Assert.Equal(expectedResponse.StatusCode, response.StatusCode);
     }    
+
+    [Fact]
+    public void TestCreateAndRetrieveOrder()
+    {
+      var request = new APIGatewayHttpApiV2ProxyRequest();
+      var context = new TestLambdaContext();
+
+      var requestBody = new Order()
+      {
+          Books = new List<BookOrder>()
+          {
+              new BookOrder(){ BookId = 1001, Quantity = 2},
+              new BookOrder(){ BookId = 1002, Quantity = 1}
+          },
+          DeliveryAddress = "123 Main St, Seattle, WA 98101"
+      };
+
+      var serializationOptions = new JsonSerializerOptions
+      {
+          PropertyNameCaseInsensitive = true,
+          PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+      };
+
+      request.Body = JsonSerializer.Serialize(requestBody, serializationOptions);
+
+      var function = new Function(httpClient, cache, serializerOptions);
+      function.CreateOrder(request, context);
+      var responseCreateOrder = function.CreateOrder(request, context);
+
+      var expectedPlacedOrder = new OrderDetails()
+      {
+          id = 10002,
+          Books = requestBody.Books,
+          Status = "placed",
+          DeliveryAddress = requestBody.DeliveryAddress,
+          CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+          UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+      };
+
+      var expectedResponse = new APIGatewayProxyResponse
+      {
+          Body = JsonSerializer.Serialize(expectedPlacedOrder, serializationOptions),
+          StatusCode = 200,
+          Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+      };
+
+      var responseCreateOrderDetails = JsonSerializer.Deserialize<OrderDetails>(responseCreateOrder.Body, serializationOptions);
+      var responseGetOrder = function.GetOrderById(new APIGatewayProxyRequest() { PathParameters = new Dictionary<string, string>() { { "id", responseCreateOrderDetails.id.ToString() } } }, context);
+      
+      Console.WriteLine("Lambda Response: \n" + responseGetOrder.Body);
+      Console.WriteLine("Expected Response: \n" + expectedResponse.Body);
+
+      Assert.Equal(expectedResponse.Body, responseGetOrder.Body);
+      Assert.Equal(expectedResponse.Headers, responseGetOrder.Headers);
+      Assert.Equal(expectedResponse.StatusCode, responseGetOrder.StatusCode);        
+    }
+
   }
 }

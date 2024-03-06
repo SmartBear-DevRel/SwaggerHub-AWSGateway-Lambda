@@ -116,6 +116,7 @@ paths:
     post:
       summary: Place book order
       operationId: createOrder
+      x-amazon-apigateway-request-validator: params      
       tags:
       - Bookstore      
       requestBody:

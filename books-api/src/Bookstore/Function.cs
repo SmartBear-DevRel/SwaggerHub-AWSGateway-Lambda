@@ -16,19 +16,26 @@ namespace Bookstore
     public class Function
     {
 
-        private static readonly HttpClient client;
-        private static readonly MemoryCache cache;
-        private static readonly JsonSerializerOptions serializerOptions;
+        private readonly HttpClient client;
+        private readonly MemoryCache cache;
+        private readonly JsonSerializerOptions serializerOptions;
 
-        static Function()
+        public Function()
         {
-            cache = new MemoryCache(new MemoryCacheOptions());
             client = new HttpClient();
+            cache = new MemoryCache(new MemoryCacheOptions());
             serializerOptions = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
+        }
+
+        public Function(HttpClient httpClient, MemoryCache memoryCache, JsonSerializerOptions jsonSerializerOptions)
+        {
+            client = httpClient;
+            cache = memoryCache;
+            serializerOptions = jsonSerializerOptions;
         }
 
         private static List<Book> GetBooksFiltered(string title, string author)
@@ -144,14 +151,16 @@ namespace Bookstore
             {
                 id = GetNextOrderId(),
                 Books = order.Books,
-                Status = Status.Placed,
+                Status = "placed",
                 DeliveryAddress = order.DeliveryAddress,
                 CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                 UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
             };
 
             // add the order to in memory cache
+            var newOrderId = GetNextOrderId();
             cache.Set(GetNextOrderId(), orderDetails, TimeSpan.FromSeconds(300));
+            cache.Set("nextOrderId", newOrderId, TimeSpan.FromSeconds(300));
 
             return new APIGatewayProxyResponse
             {
@@ -248,7 +257,7 @@ namespace Bookstore
             };
         }
 
-        private static int GetNextOrderId()
+        private int GetNextOrderId()
         {
             var nextId = 10001;
 
