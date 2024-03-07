@@ -1,7 +1,7 @@
 .PHONY: docker 
 
 LOCALSTACK_URL:=localhost:4566
-
+EXPLORE_SPACES_FILE:=ExploreSpaces.json
 # Allow for LocalStack existing running instance
 up:
 	if curl -sSf $$LOCALSTACK_URL> /dev/null; then\
@@ -60,3 +60,17 @@ sam_curl_books_id_endpoint:
 setup_localstack:
 	docker/init/localstack/buckets_local.sh
 	docker/init/localstack/roles_local.sh
+
+install_explore_cli:
+	dotnet tool install --global Explore.Cli
+
+upload_to_explore:
+	if [[ "${SESSION_TOKEN}" == "" ]]; then \
+		echo "please set SESSION_TOKEN env var";\
+		exit 1;\
+	fi
+	if [[ "${XSRF_TOKEN}" == "" ]]; then\
+		echo "please set XSRF_TOKEN env var";\
+		exit 1;\
+	fi
+	explore.cli import-spaces --explore-cookie "SESSION=${SESSION_TOKEN};XSRF-TOKEN=${XSRF_TOKEN}" -fp $(EXPLORE_SPACES_FILE)

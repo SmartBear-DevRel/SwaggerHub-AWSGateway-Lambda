@@ -107,3 +107,18 @@ function setup_localstack {
 	& ./docker/init/localstack/buckets_local.sh
 	& ./docker/init/localstack/roles_local.sh
 }
+
+function install_explore_cli {
+	dotnet tool install --global Explore.Cli
+}
+function upload_to_explore {
+	if ($env:SESSION_TOKEN -eq "") {
+		Write-Host "please set SESSION_TOKEN env var"
+		exit 1
+	}
+	if ($env:XSRF_TOKEN -eq "") {
+		Write-Host "please set XSRF_TOKEN env var"
+		exit 1
+	}
+	explore.Cli import-spaces --explore-cookie "SESSION=$env:SESSION_TOKEN;XSRF-TOKEN=$env:XSRF_TOKEN" -fp $env:EXPLORE_SPACES_FILE
+}
