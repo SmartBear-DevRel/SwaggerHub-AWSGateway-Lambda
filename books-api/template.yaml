@@ -124,7 +124,7 @@ Resources:
           Properties:          
             Path: /orders/{orderId}
             Method: PUT
-            RestApiId: !Ref BooksApi  
+            RestApiId: !Ref BooksApi   
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

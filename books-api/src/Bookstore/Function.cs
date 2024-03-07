@@ -38,6 +38,26 @@ namespace Bookstore
             serializerOptions = jsonSerializerOptions;
         }
 
+        private OrderDetails GetOrderDetails(int orderId)
+        {
+            if(cache.TryGetValue(orderId, out var orderDetails))
+            {
+                return (OrderDetails)orderDetails;
+            }
+
+            return new OrderDetails()
+            {
+                Id = orderId,
+                Books = new List<BookOrder>()
+                {
+                    new BookOrder(){ BookId = 1002, Quantity = 2}
+                },
+                Status = "placed",
+                DeliveryAddress = "SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland",
+                CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+            };
+        }
         private static List<Book> GetBooksFiltered(string title, string author)
         {
             var books = new List<Book>()
@@ -106,7 +126,7 @@ namespace Bookstore
             {
                 return new APIGatewayProxyResponse
                 {
-                    Body = "400 Bad Request",
+                    Body = "400 Bad Request - Book Id not provided or invalid.",
                     StatusCode = 400,
                     Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
                 };
@@ -147,9 +167,12 @@ namespace Bookstore
                 };
             }
 
+            //create a new orderId
+            var newOrderId = GetNextOrderId();
+
             var orderDetails = new OrderDetails()
             {
-                id = GetNextOrderId(),
+                Id = newOrderId,
                 Books = order.Books,
                 Status = "placed",
                 DeliveryAddress = order.DeliveryAddress,
@@ -158,9 +181,8 @@ namespace Bookstore
             };
 
             // add the order to in memory cache
-            var newOrderId = GetNextOrderId();
-            cache.Set(GetNextOrderId(), orderDetails, TimeSpan.FromSeconds(300));
-            cache.Set("nextOrderId", newOrderId, TimeSpan.FromSeconds(300));
+            cache.Set(newOrderId, orderDetails, TimeSpan.FromSeconds(300));
+            cache.Set("latestOrderId", newOrderId, TimeSpan.FromSeconds(300));
 
             return new APIGatewayProxyResponse
             {
@@ -173,34 +195,26 @@ namespace Bookstore
         public APIGatewayProxyResponse GetOrderById(APIGatewayProxyRequest input, ILambdaContext context)
         {
             var orderId = "";
-            input.PathParameters?.TryGetValue("id", out orderId);
+            input.PathParameters?.TryGetValue("orderId", out orderId);
 
-            int providedOrderId;
-            int.TryParse(orderId, out providedOrderId);
+            int.TryParse(orderId, out int providedOrderId);
 
-            if(providedOrderId == 0)
+            if (providedOrderId == 0)
             {
                 return new APIGatewayProxyResponse
                 {
-                    Body = "404 Not Found",
+                    Body = "404 Not Found GET Rq - Order Id not provided or invalid.",
                     StatusCode = 404,
                     Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
                 };
             }
 
-            if(!cache.TryGetValue(providedOrderId, out var order))
-            {
-                return new APIGatewayProxyResponse
-                {
-                    Body = "404 Not Found",
-                    StatusCode = 404,
-                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
-                }; 
-            }
+            // get the order from cache or default
+            var orderDetails = GetOrderDetails(providedOrderId);
 
             return new APIGatewayProxyResponse
             {
-                Body = JsonSerializer.Serialize(order, serializerOptions),
+                Body = JsonSerializer.Serialize(orderDetails, serializerOptions),
                 StatusCode = 200,
                 Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
@@ -209,7 +223,7 @@ namespace Bookstore
         public APIGatewayProxyResponse UpdateOrderById(APIGatewayProxyRequest input, ILambdaContext context)
         {
             var orderId = "";
-            input.PathParameters?.TryGetValue("id", out orderId);
+            input.PathParameters?.TryGetValue("orderId", out orderId);
 
             int providedOrderId;
             int.TryParse(orderId, out providedOrderId);
@@ -218,20 +232,10 @@ namespace Bookstore
             {
                 return new APIGatewayProxyResponse
                 {
-                    Body = "400 Bad Request",
+                    Body = "400 Bad Request PUT - Order Id not provided or invalid.",
                     StatusCode = 400,
                     Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
                 };
-            }
-
-            if(!cache.TryGetValue(providedOrderId, out var order))
-            {
-                return new APIGatewayProxyResponse
-                {
-                    Body = "404 Not Found",
-                    StatusCode = 404,
-                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
-                }; 
             }
 
             var orderDetails = JsonSerializer.Deserialize<OrderDetails>(input.Body);
@@ -261,7 +265,7 @@ namespace Bookstore
         {
             var nextId = 10001;
 
-            if(cache.TryGetValue("nextOrderId", out var value))
+            if(cache.TryGetValue("latestOrderId", out var value))
             {
                 nextId = (int)value + 1;
             }

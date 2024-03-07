@@ -168,8 +168,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderDetails'
-        '404':
-          description: 404 Not Found  
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetOrderFunction.Arn}/invocations

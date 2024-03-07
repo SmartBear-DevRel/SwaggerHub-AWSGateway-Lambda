@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 public class OrderDetails 
 {
     [JsonPropertyName("id")]
-    public int id { get; set; }
+    public int Id { get; set; }
 
     [JsonPropertyName("books")]
     public List<BookOrder> Books { get; set; }
