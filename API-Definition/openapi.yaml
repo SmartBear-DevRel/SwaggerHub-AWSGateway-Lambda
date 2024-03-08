@@ -1,12 +1,12 @@
 openapi: 3.0.3
 info:
   title: Bookstore API
-  version: 1.0.0-rc-not-security-reviewed
+  version: 1.0.0
   description: |
     The **Books API** - allows searching of books from the book catalog as well as retrieving the specific details on a selected book. Once you find the book you are looking for, you can make an order. This is a simple API to demonstrate the capabilities between [SwaggerHub](https://swagger.io/tools/swaggerhub/) and AWS Gateway.
   termsOfService: http://swagger.io/terms/
   contact: 
-    name: Frank Kilcommins
+    name: DevRel at SmartBear
     email: info@smartbear.com
   license: 
     name: Apache 2.0
@@ -30,11 +30,14 @@ tags:
 servers:  
   - description: AWS API Gateway Endpoint
     url: https://example.com
+    # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/smartbear-api-hub/bookstore-api/1.0.0
  
 paths:
   /books:
     get:
-      summary: Get a list of Books based on the provided criteria
+      summary: Get a list of books based on the provided criteria
       description: |
         This API method supports searching the book catalog based on book title or author name
       operationId: getBooks
@@ -48,18 +51,25 @@ paths:
         required: false
         schema:
           type: string
+          maxLength: 200
+          format: string
       - name: author
         description: The author name (or partial author name)
         in: query
         required: false
         schema:
           type: string
+          maxLength: 150
+          format: string
       - name: limit
         description: The maximum number of books to return
         in: query
         required: false
         schema:
           type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
           default: 10          
       responses:
         '200':
@@ -76,6 +86,8 @@ paths:
             statusCode: "200"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
+        requestParameters:
+          - integration.request.header.X-Api-Key: method.request.header.X-Api-Key
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"  
   /books/{id}:
@@ -92,7 +104,10 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
+          format: uuid
+          maxLength: 36
+          example: 8de24f4e-456b-461f-9056-af9b39b04975
       responses:
         '200':
           $ref: '#/components/responses/book'
@@ -110,6 +125,8 @@ paths:
             statusCode: "200"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
+        requestParameters:
+          - integration.request.header.X-Api-Key: method.request.header.X-Api-Key        
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy" 
   /orders:
@@ -138,6 +155,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal Server Error
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateOrderFunction.Arn}/invocations
@@ -146,13 +165,15 @@ paths:
             statusCode: "200"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
+        requestParameters:
+          - integration.request.header.X-Api-Key: method.request.header.X-Api-Key        
         contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"                 
   /orders/{orderId}:
     get:
       summary: Get book order details
       operationId: getOrderById
-      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-request-validator: params      
       tags:
       - Bookstore
       parameters: 
@@ -160,7 +181,11 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            description: The order identifier to retrieve details on
+            format: uuid
+            maxLength: 36
+            example: 8de24f4e-456b-461f-9056-af9b39b04975
       responses:
         '200':
           description: Successful Response
@@ -168,12 +193,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderDetails'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: 404 Not Found
+        '500':
+          description: Internal Server Error          
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetOrderFunction.Arn}/invocations
@@ -182,12 +205,14 @@ paths:
             statusCode: "200"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
+        requestParameters:
+          - integration.request.header.X-Api-Key: method.request.header.X-Api-Key        
         contentHandling: "CONVERT_TO_TEXT"
-        type: "aws_proxy"            
+        type: "aws_proxy"          
     put:
       summary: Update book order details
       operationId: updateOrderById
-      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-request-validator: params      
       tags:
       - Bookstore      
       parameters:
@@ -195,13 +220,17 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            description: The order identifier to update
+            format: uuid
+            maxLength: 36
+            example: 8de24f4e-456b-461f-9056-af9b39b04975          
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderDetails'
+              $ref: '#/components/schemas/Order'
       responses:
         '200':
           description: Successful Response
@@ -215,6 +244,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal Server Error                
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateOrderFunction.Arn}/invocations
@@ -223,28 +254,42 @@ paths:
             statusCode: "200"
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
+        requestParameters:
+          - integration.request.header.X-Api-Key: method.request.header.X-Api-Key        
         contentHandling: "CONVERT_TO_TEXT"
-        type: "aws_proxy"                  
+        type: "aws_proxy"                 
 components:
   schemas:
     OrderDetails:
       properties:
         books:
+          type: array
+          description: The books that are part of the order
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/BookOrder'
-          type: array
         deliveryAddress:
           type: string
+          description: The address to deliver the order to
+          maxLength: 1000
         id:
-          type: integer
+          type: string
+          description: The order identifier
+          format: uuid
+          maxLength: 36
+          example: 87da4501-4b52-4ea2-a2be-7dda8650f7eb
         createdAt:
           type: string
+          description: When the order was created
           format: date-time
           pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[012][0-9]:[0-5][0-9]:[0-5][0-9]Z$'
+          maxLength: 250
         updatedAt:
           type: string
+          description: When the order was updated
           format: date-time
           pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[012][0-9]:[0-5][0-9]:[0-5][0-9]Z$'
+          maxLength: 250
         status:
           $ref: '#/components/schemas/OrderStatusEnum'
       type: object
@@ -264,18 +309,27 @@ components:
       type: object
       properties:
         bookId:
-          type: integer
+          type: string
+          description: The book identifier
+          format: uuid
+          maxLength: 36
+          example: 87da4501-4b52-4ea2-a2be-7dda8650f7eb
         quantity:
           type: integer
-    
+          format: int64
+          minimum: 1
+          maximum: 10000
     Order:
       properties:
         books:
+          type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/BookOrder'
-          type: array
         deliveryAddress:
           type: string
+          minLength: 10
+          maxLength: 500
       type: object
       required:
         - books
@@ -286,38 +340,55 @@ components:
       additionalProperties: false
       properties:
         id:
-          type: integer
           description: the identifier for a book
-          example: 1001
+          type: string
+          format: uuid
+          maxLength: 36
+          example: 87da4501-4b52-4ea2-a2be-7dda8650f7eb
         title:
           type: string
           description: The book title
+          maxLength: 1000
           example: "Designing APIs with Swagger and OpenAPI"
         authors:
           type: array
           description: A list of book authors
+          maxItems: 1000
           items:
             type: string
-            description: A string holding an author's name
+            description: A string containing an author's name
+            maxLength: 250
             minItems: 1
+            maxItems: 1000
             example: "[Joshua S. Ponelat, Lukas L. Rosenstock]"
         published:
           type: string
           format: date
           pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          maxLength: 250
           example: "2022-05-01"
     ValidationError:
       properties:
         loc:
+          type: array
+          maxItems: 1000
           items:
+            maxItems: 1000
             anyOf:
               - type: string
+                maxLength: 100
               - type: integer
-          type: array
+                format: int64
+                minimum: 1
+                maximum: 9223372036854775808
         msg:
           type: string
+          format: string
+          maxLength: 5000
         type:
           type: string
+          format: string
+          maxLength: 200
       type: object
       required:
         - loc
@@ -330,7 +401,7 @@ components:
         application/json:
           schema:
             type: array
-            minItems: 0
+            maxItems: 1000
             items:
               $ref: '#/components/schemas/Book'
     book:
@@ -339,4 +410,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Book'
-            
+  
+  securitySchemes:
+    ApiKeyAuth:        
+      type: apiKey
+      in: header       
+      name: api_key
+  
+security:
+  - ApiKeyAuth: []

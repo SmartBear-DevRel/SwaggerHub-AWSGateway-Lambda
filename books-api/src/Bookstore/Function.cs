@@ -38,7 +38,7 @@ namespace Bookstore
             serializerOptions = jsonSerializerOptions;
         }
 
-        private OrderDetails GetOrderDetails(int orderId)
+        private OrderDetails GetOrderDetails(Guid orderId)
         {
             if(cache.TryGetValue(orderId, out var orderDetails))
             {
@@ -50,7 +50,7 @@ namespace Bookstore
                 Id = orderId,
                 Books = new List<BookOrder>()
                 {
-                    new BookOrder(){ BookId = 1002, Quantity = 2}
+                    new BookOrder(){ BookId = Guid.Parse("b9d803a9-43a4-427c-80e4-5f38048654d3"), Quantity = 2}
                 },
                 Status = "placed",
                 DeliveryAddress = "SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland",
@@ -62,9 +62,9 @@ namespace Bookstore
         {
             var books = new List<Book>()
             {
-                new Book(){ Id = 1001, Title = "Designing APIs with Swagger and OpenAPI", Authors = new List<string>() {"Joshua S. Ponelat", "Lukas L. Rosenstock"}, Published = "2022-05-01"},
-                new Book(){ Id = 1002, Title = "The Lean Startup", Authors = new List<string>(){ "Eric Ries" }, Published = "2011-01-01"},
-                new Book(){ Id = 1003, Title = "Building Microservices", Authors = new List<string>(){ "Sam Newman" }, Published = "2022-01-01"}                
+                new Book(){ Id = Guid.Parse("d7bc78eb-d755-436f-978c-48af93dd0b28"), Title = "Designing APIs with Swagger and OpenAPI", Authors = new List<string>() {"Joshua S. Ponelat", "Lukas L. Rosenstock"}, Published = "2022-05-01"},
+                new Book(){ Id = Guid.Parse("b9d803a9-43a4-427c-80e4-5f38048654d3"), Title = "The Lean Startup", Authors = new List<string>(){ "Eric Ries" }, Published = "2011-01-01"},
+                new Book(){ Id = Guid.Parse("7aabd5b9-f87d-40b6-8d35-01cec823a4d1"), Title = "Building Microservices", Authors = new List<string>(){ "Sam Newman" }, Published = "2022-01-01"}                
             };
 
             // filter by author and title
@@ -90,19 +90,79 @@ namespace Bookstore
             return books;
         }
 
-        private static Book GetBook(int bookId)
+        private static Book GetBook(Guid bookId)
         {
             return GetBooksFiltered(null, null).Where(b => b.Id == bookId).FirstOrDefault();
         }
 
         public APIGatewayProxyResponse GetBooks(APIGatewayProxyRequest input, ILambdaContext context)
         {
-           
+            //check X-Api-Key header
+            var apiKey = "";
+            input.Headers?.TryGetValue("X-Api-Key", out apiKey);
+
+            if(string.IsNullOrEmpty(apiKey) || !isValidKey(apiKey))
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = $"Unauthorized - Invalid or missing API Key",
+                    StatusCode = 401,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+
             var title = "";
             input.QueryStringParameters?.TryGetValue("title", out title);
 
             var author = "";
             input.QueryStringParameters?.TryGetValue("author", out author);
+
+            var limit = "";
+            input.QueryStringParameters?.TryGetValue("limit", out limit);
+
+            //ToDo - validate title and author
+            if(!string.IsNullOrEmpty(limit))
+            {
+                if(!int.TryParse(limit, out int result))
+                {
+                    return new APIGatewayProxyResponse
+                    {
+                        Body = "400 Bad Request - Limit must be a number.",
+                        StatusCode = 400,
+                        Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                    };
+                }
+
+                if(result < 1 || result > 1000)
+                {
+                    return new APIGatewayProxyResponse
+                    {
+                        Body = "400 Bad Request - Limit must be between 1 and 1000.",
+                        StatusCode = 400,
+                        Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                    };
+                }
+            }
+
+            if(!string.IsNullOrEmpty(title) && title.Length > 200)
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "400 Bad Request - Title must be at less than 200 characters.",
+                    StatusCode = 400,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+
+            if(!string.IsNullOrEmpty(author) && author.Length > 150)
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "400 Bad Request - Author must be at less than 150 characters.",
+                    StatusCode = 400,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
 
             var books = GetBooksFiltered(title, author);
 
@@ -114,15 +174,30 @@ namespace Bookstore
             };
         }
 
+
         public APIGatewayProxyResponse GetBookById(APIGatewayProxyRequest input, ILambdaContext context)
         {
+            //check X-Api-Key header
+            var apiKey = "";
+            input.Headers?.TryGetValue("X-Api-Key", out apiKey);
+
+            if(string.IsNullOrEmpty(apiKey) || !isValidKey(apiKey))
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "Unauthorized - Invalid or missing API Key.",
+                    StatusCode = 401,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+            
             var bookId = "";
             input.PathParameters?.TryGetValue("id", out bookId);
 
-            int providedBookId;
-            int.TryParse(bookId, out providedBookId);
+            Guid providedBookId;
+            Guid.TryParse(bookId, out providedBookId);
 
-            if(providedBookId == 0)
+            if(providedBookId == Guid.Empty)
             {
                 return new APIGatewayProxyResponse
                 {
@@ -154,6 +229,20 @@ namespace Bookstore
 
         public APIGatewayProxyResponse CreateOrder(APIGatewayHttpApiV2ProxyRequest input, ILambdaContext context)
         {
+            //check X-Api-Key header
+            var apiKey = "";
+            input.Headers?.TryGetValue("X-Api-Key", out apiKey);
+
+            if(string.IsNullOrEmpty(apiKey) || !isValidKey(apiKey))
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "Unauthorized - Invalid or missing API Key.",
+                    StatusCode = 401,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+
             var order = JsonSerializer.Deserialize<Order>(input.Body);
             Console.WriteLine("Order: " + order);
 
@@ -194,12 +283,26 @@ namespace Bookstore
 
         public APIGatewayProxyResponse GetOrderById(APIGatewayProxyRequest input, ILambdaContext context)
         {
+            //check X-Api-Key header
+            var apiKey = "";
+            input.Headers?.TryGetValue("X-Api-Key", out apiKey);
+
+            if(string.IsNullOrEmpty(apiKey) || !isValidKey(apiKey))
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "Unauthorized - Invalid or missing API Key.",
+                    StatusCode = 401,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+
             var orderId = "";
             input.PathParameters?.TryGetValue("orderId", out orderId);
 
-            int.TryParse(orderId, out int providedOrderId);
+            Guid.TryParse(orderId, out Guid providedOrderId);
 
-            if (providedOrderId == 0)
+            if (providedOrderId == Guid.Empty)
             {
                 return new APIGatewayProxyResponse
                 {
@@ -222,13 +325,26 @@ namespace Bookstore
 
         public APIGatewayProxyResponse UpdateOrderById(APIGatewayProxyRequest input, ILambdaContext context)
         {
+            //check X-Api-Key header
+            var apiKey = "";
+            input.Headers?.TryGetValue("X-Api-Key", out apiKey);
+
+            if(string.IsNullOrEmpty(apiKey) || !isValidKey(apiKey))
+            {
+                return new APIGatewayProxyResponse
+                {
+                    Body = "Unauthorized - Invalid or missing API Key.",
+                    StatusCode = 401,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                };
+            }
+
             var orderId = "";
             input.PathParameters?.TryGetValue("orderId", out orderId);
 
-            int providedOrderId;
-            int.TryParse(orderId, out providedOrderId);
+            Guid.TryParse(orderId, out Guid providedOrderId);
 
-            if(providedOrderId == 0)
+            if(providedOrderId == Guid.Empty)
             {
                 return new APIGatewayProxyResponse
                 {
@@ -238,9 +354,9 @@ namespace Bookstore
                 };
             }
 
-            var orderDetails = JsonSerializer.Deserialize<OrderDetails>(input.Body);
+            var orderToUpdate = JsonSerializer.Deserialize<Order>(input.Body);
 
-            if(orderDetails == null)
+            if(orderToUpdate == null)
             {
                 return new APIGatewayProxyResponse
                 {
@@ -248,29 +364,56 @@ namespace Bookstore
                     StatusCode = 400,
                     Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
                 };
-            }
+            }            
+
+            var updatedOrder = new OrderDetails()
+            {
+                Id = providedOrderId,
+                Books = orderToUpdate.Books,
+                Status = "placed",
+                DeliveryAddress = orderToUpdate.DeliveryAddress,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+            };            
 
             // update the order in in memory cache
-            cache.Set(providedOrderId, orderDetails, TimeSpan.FromSeconds(300));
+            cache.Set(providedOrderId, updatedOrder, TimeSpan.FromSeconds(300));
 
             return new APIGatewayProxyResponse
             {
-                Body = JsonSerializer.Serialize(orderDetails, serializerOptions),
+                Body = JsonSerializer.Serialize(updatedOrder, serializerOptions),
                 StatusCode = 200,
                 Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
         }
 
-        private int GetNextOrderId()
+        private Guid GetNextOrderId()
         {
-            var nextId = 10001;
+            var nextId = Guid.Parse("fd6c319c-8d7d-45f0-ba39-9f90a7637af8");
 
             if(cache.TryGetValue("latestOrderId", out var value))
             {
-                nextId = (int)value + 1;
+                return Guid.NewGuid();
             }
 
             return nextId;
+        }
+
+        private bool isValidKey(string apiKey)
+        {
+            // super silly validation just for demo purposes.........not a real validation function
+
+            if(string.IsNullOrEmpty(apiKey))
+            {
+                return false;
+            }
+
+            if(apiKey != "91e69fe1-fefd-4b2d-b689-032fb0947d10")
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

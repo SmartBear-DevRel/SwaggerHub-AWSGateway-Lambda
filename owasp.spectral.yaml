@@ -7,7 +7,7 @@ overrides:
       owasp:api4:2019-rate-limit: "off"
       owasp:api1:2019-no-numeric-ids: "off"
 
-extends: [spectral:oas, "@stoplight/spectral-owasp-ruleset@1.4.3"]
+extends: [spectral:oas, "@stoplight/spectral-owasp-ruleset"]
 formats:
   - oas3
 

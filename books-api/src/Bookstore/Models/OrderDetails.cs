@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Runtime.Serialization;
+using System;
 
 public class OrderDetails 
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("books")]
     public List<BookOrder> Books { get; set; }

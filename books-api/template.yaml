@@ -44,6 +44,9 @@ Resources:
           Properties:          
             Path: /books
             Method: GET
+            RequestParameters:
+            - method.request.header.X-Api-Key:
+                Required: true
             RestApiId: !Ref BooksApi
           
   GetSingleBookFunction:
@@ -64,6 +67,9 @@ Resources:
           Properties:          
             Path: /books/{id}
             Method: GET
+            RequestParameters:
+            - method.request.header.X-Api-Key:
+                Required: true            
             RestApiId: !Ref BooksApi
 
   CreateOrderFunction:
@@ -84,6 +90,9 @@ Resources:
           Properties:          
             Path: /orders
             Method: POST
+            RequestParameters:
+            - method.request.header.X-Api-Key:
+                Required: true            
             RestApiId: !Ref BooksApi  
 
   GetOrderFunction:
@@ -104,6 +113,9 @@ Resources:
           Properties:          
             Path: /orders/{orderId}
             Method: GET
+            RequestParameters:
+            - method.request.header.X-Api-Key:
+                Required: true            
             RestApiId: !Ref BooksApi      
 
   UpdateOrderFunction:
@@ -124,6 +136,9 @@ Resources:
           Properties:          
             Path: /orders/{orderId}
             Method: PUT
+            RequestParameters:
+            - method.request.header.X-Api-Key:
+                Required: true            
             RestApiId: !Ref BooksApi   
 
 Outputs:
