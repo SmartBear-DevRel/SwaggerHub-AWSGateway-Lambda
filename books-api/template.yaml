@@ -13,12 +13,12 @@ Resources:
   BooksApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: books-api
+      Name: books-api-hardened
       #MethodSettings:
       #  - LoggingLevel: INFO
       #    ResourcePath: '/*' # allows for logging on any resource
       #    HttpMethod: '*' # allows for logging on any method      
-      StageName: Prod
+      StageName: v2
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
@@ -150,7 +150,7 @@ Outputs:
   #  Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
   BookstoreApi:
     Description: "API Gateway endpoint URL for Prod stage for Bookstore function"
-    Value: !Sub "https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"    
+    Value: !Sub "https://${BooksApi}.execute-api.${AWS::Region}.amazonaws.com/v2"    
   GetBooksFunction:
     Description: "Bookstore Lambda Function ARN"
     Value: !GetAtt GetBooksFunction.Arn
