@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - localstack-hardened
+      - vuln-api-hardened
 
 env:
   PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
