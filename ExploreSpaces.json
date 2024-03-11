@@ -1,1 +1,1107 @@
-{"info":{"version":"0.0.1","exportedAt":"2024-03-07T15:44:01.464Z"},"exploreSpaces":[{"id":"18e45874-65c5-49e2-ab3d-bdeb6938a10a","name":"Security-Webinar-BookstoreApi","apis":[{"connections":[{"id":"c17fd934-a6a4-4caa-af71-bb3d1f2d09a0","type":null,"name":"REST","schema":"OpenAPI","schemaVersion":"3.0.1","connectionDefinition":{"openapi":"3.0.0","servers":[{"url":"http://127.0.0.1:3000"}],"paths":{"/books":{"get":{"responses":[],"parameters":[]}}}},"paths":null,"settings":{"type":"RestConnectionSettings","connectTimeout":30,"followRedirects":true,"encodeUrl":true},"credentials":null}],"id":"0cb2d2ca-c14e-4bd7-96f3-a892fedde3ae","name":"GET books","type":"REST","description":null,"servers":null},{"connections":[{"id":"21cba3cf-e414-493c-b535-99cd51bd45a4","type":null,"name":"REST","schema":"OpenAPI","schemaVersion":"3.0.1","connectionDefinition":{"openapi":"3.0.0","servers":[{"url":"http://127.0.0.1:3000"}],"paths":{"/books/1002":{"get":{"responses":[],"parameters":[]}}}},"paths":null,"settings":{"type":"RestConnectionSettings","connectTimeout":30,"followRedirects":true,"encodeUrl":true},"credentials":null}],"id":"122e3c9f-eac4-4c5c-8d1c-d6ee5b5a6348","name":"GET BookById","type":"REST","description":null,"servers":null},{"connections":[{"id":"80273135-4d53-4185-9a74-2ea3e7b82119","type":null,"name":"REST","schema":"OpenAPI","schemaVersion":"3.0.1","connectionDefinition":{"openapi":"3.0.0","servers":[{"url":"http://127.0.0.1:3000"}],"paths":{"/orders":{"post":{"responses":[],"parameters":[{"in":"header","name":"Content-Type","schema":{"type":"string"},"examples":{"example":{"value":"application/json"}}}],"requestBody":{"content":{"application/json":{"examples":{"example":{"value":" {\r\n        \u0022books\u0022: [\r\n            {\r\n                \u0022bookId\u0022: 1002,\r\n                \u0022quantity\u0022: 2\r\n            }\r\n        ],\r\n        \u0022deliveryAddress\u0022: \u0022SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\u0022\r\n    }\r\n"}}}}}}}}},"paths":null,"settings":{"type":"RestConnectionSettings","connectTimeout":30,"followRedirects":true,"encodeUrl":true},"credentials":null}],"id":"e79b9e76-7175-48d8-929e-d5a98c59ed23","name":"POST orders","type":"REST","description":null,"servers":null},{"connections":[{"id":"bfcf0e85-1e1c-48f1-b054-ca25d8d11da2","type":null,"name":"REST","schema":"OpenAPI","schemaVersion":"3.0.1","connectionDefinition":{"openapi":"3.0.0","servers":[{"url":"http://127.0.0.1:3000"}],"paths":{"/orders/10002":{"get":{"responses":[],"parameters":[]}}}},"paths":null,"settings":{"type":"RestConnectionSettings","connectTimeout":30,"followRedirects":true,"encodeUrl":true},"credentials":null}],"id":"153b07b5-7695-43db-8201-7a8a160441e7","name":"GET OrderById","type":"REST","description":null,"servers":null},{"connections":[{"id":"c27afa41-d7d0-48c4-a2ab-9d44c7bde735","type":null,"name":"REST","schema":"OpenAPI","schemaVersion":"3.0.1","connectionDefinition":{"openapi":"3.0.0","servers":[{"url":"http://127.0.0.1:3000"}],"paths":{"/orders/10002":{"put":{"responses":[],"parameters":[{"in":"header","name":"Content-Type","schema":{"type":"string"},"examples":{"example":{"value":"application/json"}}}],"requestBody":{"content":{"application/json":{"examples":{"example":{"value":"{\r\n    \u0022id\u0022: 10002,\r\n    \u0022books\u0022: [\r\n        {\r\n            \u0022bookId\u0022: 1002,\r\n            \u0022quantity\u0022: 2\r\n        }\r\n    ],\r\n    \u0022status\u0022: \u0022paid\u0022,\r\n    \u0022deliveryAddress\u0022: \u0022SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\u0022,\r\n    \u0022createdAt\u0022: \u00222024-03-07T15:38:46Z\u0022,\r\n    \u0022updatedAt\u0022: \u00222024-03-07T15:38:46Z\u0022\r\n}"}}}}}}}}},"paths":null,"settings":{"type":"RestConnectionSettings","connectTimeout":30,"followRedirects":true,"encodeUrl":true},"credentials":null}],"id":"358415d6-d063-43d0-8495-372e61bb0316","name":"PUT OrderById -- mass assignment","type":"REST","description":null,"servers":null}]}]}
+{
+	"info": {
+		"version": "0.0.1",
+		"exportedAt": "2024-03-11T10:46:41.016Z"
+	},
+	"exploreSpaces": [
+		{
+			"id": "b48bc0c3-fea8-4857-bc42-ca57fef93255",
+			"name": "Security-Webinar-BookstoreApi -- Hardened",
+			"apis": [
+				{
+					"connections": [
+						{
+							"id": "0df0efff-d9a4-4e88-92ee-32ec4e19b73e",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/books": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "df57df28-0e3c-4d62-ac2f-7b60f4d26045",
+					"name": "GET books",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "c311e240-149d-4ce4-93dc-7fe9e2a9eded",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/books/b9d803a9-43a4-427c-80e4-5f38048654d3": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "c61e4130-48b4-408f-b442-afea6163699f",
+					"name": "GET bookById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "84f32585-ee23-4cec-8d1a-ab5d5e84ca1b",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders": {
+										"post": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"books\": [\r\n        {\r\n            \"bookId\": \"b9d803a9-43a4-427c-80e4-5f38048654d3\",\r\n            \"quantity\": 3\r\n        }\r\n    ],\r\n    \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "e5ab5df1-be52-4fc6-a77d-dc93dcf742f5",
+					"name": "POST orders",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "15ad86c7-702b-4651-a3aa-eea4394f3adc",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders/fd6c319c-8d7d-45f0-ba39-9f90a7637af8": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "0803f3d5-a104-404a-b1ea-36a82337efe6",
+					"name": "GET orderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "a42cff3d-c892-45d6-8315-530542045878",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders/fd6c319c-8d7d-45f0-ba39-9f90a7637af8": {
+										"put": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"books\": [\r\n        {\r\n            \"bookId\": \"b9d803a9-43a4-427c-80e4-5f38048654d3\",\r\n            \"quantity\": 3\r\n        }\r\n    ],\r\n    \"deliveryAddress\": \"SmartBear Software, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "797288fb-402f-471b-aca4-b3863d539e03",
+					"name": "PUT orderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				}
+			]
+		},
+		{
+			"id": "c30d61ef-a323-4e1b-9f6a-db5fb89b5166",
+			"name": "Security-Webinar-BookstoreApi",
+			"apis": [
+				{
+					"connections": [
+						{
+							"id": "aa0a76d1-184f-4a69-9102-c29dada61b5e",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/books": {
+										"get": {
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "cb0209ab-6d65-4550-b265-86808357ba82",
+					"name": "GET books",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "2371ebe9-745b-4bbb-a61a-c00049fe1d79",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/books/1002": {
+										"get": {
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "f8b767ae-e32d-4d3f-bb39-6a865e6562a6",
+					"name": "GET BookById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "1a8f8020-6d74-4634-8b6f-d765b82b08a0",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders": {
+										"post": {
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": " {\r\n        \"books\": [\r\n            {\r\n                \"bookId\": 1002,\r\n                \"quantity\": 2\r\n            }\r\n        ],\r\n        \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n    }\r\n"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "d67c4608-0063-4000-bbf7-8f2d66baab81",
+					"name": "POST orders",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "97d000c5-9d0a-4903-ac39-d79c5507c50e",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders/10002": {
+										"get": {
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "a6a90a54-4641-46e6-a54e-691f5a973562",
+					"name": "GET OrderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "f52b0603-13af-4cb4-80dd-8b06e9a81bfc",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "http://127.0.0.1:3000"
+									}
+								],
+								"paths": {
+									"/orders/10002": {
+										"put": {
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"id\": 10002,\r\n    \"books\": [\r\n        {\r\n            \"bookId\": 1002,\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"status\": \"paid\",\r\n    \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\",\r\n    \"createdAt\": \"2024-03-07T15:38:46Z\",\r\n    \"updatedAt\": \"2024-03-07T15:38:46Z\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "992423e7-70d9-4829-ad97-57e5cfecae5f",
+					"name": "PUT OrderById -- mass assignment",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				}
+			]
+		},
+		{
+			"id": "ac0b105d-be77-490f-8a2e-afd30e4c1206",
+			"name": "Security-Webinar-BookstoreApi -- Hardened-AWS",
+			"apis": [
+				{
+					"connections": [
+						{
+							"id": "0444a8c1-d3b3-4f18-92b6-a8ed6f48087b",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://r4jifvfps1.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/v2/books": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "0b540287-2615-48d0-8218-24e630fa2e49",
+					"name": "GET Books",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "7022c310-c6ab-4b8f-8a90-cbe9798fc921",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://r4jifvfps1.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/v2/books/b9d803a9-43a4-427c-80e4-5f38048654d3": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "c2d8401d-6041-4817-8f32-4c869f59833d",
+					"name": "GET BookById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "7995d6af-1c1e-47a3-ab1b-b723d2a6cb97",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://r4jifvfps1.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/v2/orders": {
+										"post": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"books\": [\r\n        {\r\n            \"bookId\": \"b9d803a9-43a4-427c-80e4-5f38048654d3\",\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "27d9489d-078b-4a89-a81e-4b208da570ef",
+					"name": "POST orders",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "b3d23e44-8851-430d-ba11-5376fc926abb",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://r4jifvfps1.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/v2/orders/fd6c319c-8d7d-45f0-ba39-9f90a7637af8": {
+										"get": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											]
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "493aafb5-1dcc-4492-9f10-fb3fc424040f",
+					"name": "GET orderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "e347f2dd-f934-41cd-8cca-77f2c16e79e6",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://r4jifvfps1.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/v2/orders/fd6c319c-8d7d-45f0-ba39-9f90a7637af8": {
+										"put": {
+											"security": [
+												{
+													"ApiKeyCredentials": []
+												}
+											],
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"books\": [\r\n        {\r\n            \"bookId\": \"b9d803a9-43a4-427c-80e4-5f38048654d3\",\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"deliveryAddress\": \"SmartBear Software, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": {
+								"type": "ApiKeyCredentials",
+								"apiKey": "91e69fe1-fefd-4b2d-b689-032fb0947d10",
+								"token": null,
+								"username": null,
+								"password": null
+							}
+						}
+					],
+					"id": "5b713094-90be-4bc4-b189-7f74c372686a",
+					"name": "PUT orderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				}
+			]
+		},
+		{
+			"id": "684c13f3-9f41-4000-b3b3-2a3cb44b6075",
+			"name": "Security-Webinar-BookstoreApi -- AWS",
+			"apis": [
+				{
+					"connections": [
+						{
+							"id": "0d37d4ae-99a9-49c8-becc-b32c2c7222a6",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://0rj2pbd384.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/Prod/books": {
+										"get": {
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "1dceeb33-b03c-4e8e-a3d5-a164e832f1c4",
+					"name": "GET Books",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "7186096d-5b89-4e25-93e7-4cc5bfd4ef53",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://0rj2pbd384.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/Prod/books/1002": {
+										"get": {
+											"responses": [],
+											"parameters": []
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "ea35ad9d-12b8-4ad0-bed2-11cd6861b063",
+					"name": "GET bookById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "e7be27fb-d7da-45f9-a6d9-18434814d69b",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://0rj2pbd384.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/Prod/orders": {
+										"post": {
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"books\": [\r\n        {\r\n            \"bookId\": 1002,\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "81c92209-f5a4-4b31-8a51-dcee89ef764e",
+					"name": "POST orders",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				},
+				{
+					"connections": [
+						{
+							"id": "c15b3a90-7467-4991-9b2f-dc5e6e4e28c9",
+							"type": null,
+							"name": "REST",
+							"schema": "OpenAPI",
+							"schemaVersion": "3.0.1",
+							"connectionDefinition": {
+								"openapi": "3.0.0",
+								"servers": [
+									{
+										"url": "https://0rj2pbd384.execute-api.eu-west-1.amazonaws.com"
+									}
+								],
+								"paths": {
+									"/Prod/orders/10001": {
+										"put": {
+											"responses": [],
+											"parameters": [
+												{
+													"in": "header",
+													"name": "Content-Type",
+													"schema": {
+														"type": "string"
+													},
+													"examples": {
+														"example": {
+															"value": "application/json"
+														}
+													}
+												}
+											],
+											"requestBody": {
+												"content": {
+													"application/json": {
+														"examples": {
+															"example": {
+																"value": "{\r\n    \"id\": 10001,\r\n    \"books\": [\r\n        {\r\n            \"bookId\": 1002,\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"status\": \"paid\",\r\n    \"deliveryAddress\": \"SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland\",\r\n    \"createdAt\": \"2024-03-11T10:38:11Z\",\r\n    \"updatedAt\": \"2024-03-11T10:38:12Z\"\r\n}"
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"paths": null,
+							"settings": {
+								"type": "RestConnectionSettings",
+								"connectTimeout": 30,
+								"followRedirects": true,
+								"encodeUrl": true
+							},
+							"credentials": null
+						}
+					],
+					"id": "95d729bb-7027-4c55-9926-1b851ef032ec",
+					"name": "PUT orderById",
+					"type": "REST",
+					"description": null,
+					"servers": null
+				}
+			]
+		}
+	]
+}
