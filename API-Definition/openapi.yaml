@@ -76,6 +76,8 @@ paths:
           $ref: '#/components/responses/books'
         '400':
           description: 400 Bad Request
+        '401':
+          description: 401 Unauthorized
         '500':
           description: 500 Internal Server Error
       x-amazon-apigateway-integration:
@@ -113,6 +115,8 @@ paths:
           $ref: '#/components/responses/book'
         '400':
           description: 400 Bad Request
+        '401':
+          description: 401 Unauthorized          
         '404':
           description: 404 Not Found
         '500':
@@ -149,6 +153,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderDetails'
+        '401':
+          description: 401 Unauthorized                
         '422':
           description: Validation Error
           content:
@@ -193,6 +199,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderDetails'
+        '401':
+          description: 401 Unauthorized                
         '404':
           description: 404 Not Found
         '500':
@@ -238,6 +246,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderDetails'
+        '401':
+          description: 401 Unauthorized                
         '422':
           description: Validation Error
           content:
@@ -260,6 +270,36 @@ paths:
         type: "aws_proxy"                 
 components:
   schemas:
+    BookOrder:
+      type: object
+      properties:
+        bookId:
+          type: string
+          description: The book identifier
+          format: uuid
+          maxLength: 36
+          example: 87da4501-4b52-4ea2-a2be-7dda8650f7eb
+        quantity:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 10000
+    Order:
+      properties:
+        books:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/BookOrder'
+        deliveryAddress:
+          type: string
+          minLength: 10
+          maxLength: 500
+      type: object
+      required:
+        - books
+        - deliveryAddress
+      additionalProperties: false
     OrderDetails:
       properties:
         books:
@@ -305,35 +345,7 @@ components:
         - placed
         - paid
         - delivered
-    BookOrder:
-      type: object
-      properties:
-        bookId:
-          type: string
-          description: The book identifier
-          format: uuid
-          maxLength: 36
-          example: 87da4501-4b52-4ea2-a2be-7dda8650f7eb
-        quantity:
-          type: integer
-          format: int64
-          minimum: 1
-          maximum: 10000
-    Order:
-      properties:
-        books:
-          type: array
-          maxItems: 100
-          items:
-            $ref: '#/components/schemas/BookOrder'
-        deliveryAddress:
-          type: string
-          minLength: 10
-          maxLength: 500
-      type: object
-      required:
-        - books
-        - deliveryAddress
+
     Book:
       description: The schema object for a Book
       type: object

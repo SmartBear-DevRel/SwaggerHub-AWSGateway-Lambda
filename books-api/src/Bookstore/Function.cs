@@ -355,6 +355,7 @@ namespace Bookstore
             }
 
             var orderToUpdate = JsonSerializer.Deserialize<Order>(input.Body);
+            var currentOrder = GetCurrentOrderInfo(orderId);
 
             if(orderToUpdate == null)
             {
@@ -368,11 +369,11 @@ namespace Bookstore
 
             var updatedOrder = new OrderDetails()
             {
-                Id = providedOrderId,
+                Id = currentOrder.Id,
                 Books = orderToUpdate.Books,
-                Status = "placed",
+                Status = currentOrder.Status,
                 DeliveryAddress = orderToUpdate.DeliveryAddress,
-                CreatedAt = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                CreatedAt = currentOrder.CreatedAt,
                 UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
             };            
 
@@ -414,6 +415,23 @@ namespace Bookstore
             }
 
             return true;
+        }
+
+        private OrderDetails GetCurrentOrderInfo(string orderId)
+        {
+            if(cache.TryGetValue(orderId, out var orderDetails))
+            {
+                return (OrderDetails)orderDetails;
+            }
+
+            return new OrderDetails()
+            {
+                Id = Guid.Parse(orderId),
+                Status = "placed",
+                DeliveryAddress = "SmartBear, Mayoralty House, Flood Street Galway, H91 P8PR, Ireland",
+                CreatedAt = DateTime.UtcNow.AddSeconds(-1).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                UpdatedAt = DateTime.UtcNow.AddSeconds(-1).ToString("yyyy-MM-ddTHH:mm:ssZ")
+            };
         }
     }
 }
