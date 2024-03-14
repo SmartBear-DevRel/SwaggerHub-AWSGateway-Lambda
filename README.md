@@ -11,6 +11,7 @@ A sample solution taking an API definition from SwaggerHub, crafting a Lambda fu
   - [Problem Statement](#problem-statement)
   - [Solution Overview](#solution-overview)
     - [Scenarios](#scenarios)
+      - [Scenario Links](#scenario-links)
       - [High level steps](#high-level-steps)
   - [Prerequisites](#prerequisites)
   - [Instructions](#instructions)
@@ -50,13 +51,27 @@ The `main` branch of this repository contains a simple end-to-end solution.
 Alongside supporting webinars/workshops, additional scenarios are stored in separate branches.
 
 1. `vuln-api`
+   - This example the process of
+     - creating an OpenAPI Specification (OAS) design definition
+     - deploying the API to an operational AWS environment.
+     - exploring the deployed API to manually identify security vulnerabilities.
 2. `vuln-api-hardened`
+   - This example follows on the `vuln-api` branch and shows the process of
+     - using Spectral public and custom rule-sets to identify vulnerabilities early in the design and development process in
+       - SwaggerHub
+       - CI
+       - Locally
+     - rectifying the security vulnerabilities.
+     - deploying our updated API to an operational AWS environment.
+     - exploring the deployed API to ensure the security vulnerabilities have been resolve
+
+#### Scenario Links
 
 | Content                                                                              | Link                                                                                                                         | Branch Name                                                                                                    | Overview |
 | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------- |
-| How to Streamline API Development on Amazon API Gateway Using SmartBear’s SwaggerHub | [Blog](https://aws.amazon.com/blogs/apn/how-to-streamline-api-development-on-amazon-api-gateway-using-smartbear-swaggerhub/) | [`main`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/main)                           |          |
-| Defend Your APIs - Secure by Design                                                  | [Watch](#)                                                                                                                   | [`vuln-api`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/vuln-api)                   |          |
-| Defend Your APIs - Secure by Design                                                  | [Watch](#)                                                                                                                   | [`vuln-api-hardened`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/vuln-api-hardened) |          |
+| How to Streamline API Development on Amazon API Gateway Using SmartBear’s SwaggerHub | [Blog](https://aws.amazon.com/blogs/apn/how-to-streamline-api-development-on-amazon-api-gateway-using-smartbear-swaggerhub/) | [`main`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/main)                           | simple e2e solution         |
+| Defend Your APIs - Secure by Design                                                  | [Watch](https://smartbear.com/resources/webinars/defend-your-apis-secure-by-design/?ws=2) / [Slides](https://assets.smartbear.com/transfer/11947ca5400879e80f0d0c90a8a4a94eef42244c4bf57de7b0edcf80e9322a35)                                                                                                                   | [`vuln-api`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/vuln-api)                   | Vulnerable API e2e deployed and explored      |
+| Defend Your APIs - Secure by Design                                                  | [Watch](https://smartbear.com/resources/webinars/defend-your-apis-secure-by-design/?ws=2) / [Slides](https://assets.smartbear.com/transfer/11947ca5400879e80f0d0c90a8a4a94eef42244c4bf57de7b0edcf80e9322a35)                                                                                                                      | [`vuln-api-hardened`](https://github.com/SmartBear-DevRel/SwaggerHub-AWSGateway-Lambda/tree/vuln-api-hardened) | Vulnerable API issues identified and rectified               |
 
 #### High level steps
 
