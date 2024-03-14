@@ -7,7 +7,7 @@ A sample solution taking an API definition from SwaggerHub, crafting a Lambda fu
 - [Problem Statement](#problem-statement)
 - [Solution Overview](#solution-overview)
    - [Scenarios](#scenarios)
-    - [Scenario Links](#scenarios-links)
+    - [Scenario Links](#scenario-links)
    - [High level steps](#high-level-steps)
 - [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
