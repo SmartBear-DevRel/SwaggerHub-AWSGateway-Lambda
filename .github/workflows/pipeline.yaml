@@ -59,7 +59,7 @@ jobs:
             --s3-bucket ${ARTIFACTS_BUCKET} \
             --region ${AWS_REGION} \
             --output-template-file packaged-lambda.yaml
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: packaged-lambda.yaml
           path: packaged-lambda.yaml
